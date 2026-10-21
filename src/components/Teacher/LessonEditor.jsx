@@ -30,6 +30,7 @@ const LessonEditor = () => {
     content: yup.string().required(t('teacher.lessonEditor.content') + ' *'),
     unit: yup.string().nullable(),
     topic: yup.string().nullable(),
+    grade: yup.string().nullable(),
     difficulty: yup.string().required(t('teacher.lessonEditor.difficulty') + ' *'),
     tags: yup.array().of(yup.string()),
     estimated_time: yup.number().min(1, 'Min 1'),
@@ -50,6 +51,7 @@ const LessonEditor = () => {
       content: '',
       unit: '',
       topic: '',
+      grade: '',
       difficulty: 'basic',
       tags: [],
       estimated_time: 45,
@@ -86,6 +88,7 @@ const LessonEditor = () => {
       setValue('description', lesson.description || '');
       setValue('content', lesson.content);
       setValue('unit', lesson.unit || '');
+      setValue('grade', lesson.grade || '');
       setValue('difficulty', lesson.difficulty);
       setValue('tags', Array.isArray(lesson.tags) ? lesson.tags : []);
       setValue('estimated_time', lesson.estimated_time || 45);
@@ -249,6 +252,25 @@ const LessonEditor = () => {
                   <option key={unit} value={unit}>{unit}</option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="lesson-grade" className="block text-sm font-medium text-[var(--on-surface-variant)] mb-1">
+                {t('teacher.lessonEditor.grade')}
+              </label>
+              <select
+                id="lesson-grade"
+                {...register('grade')}
+                className="w-full px-4 py-3 rounded-xl border-2 border-[var(--surface-container-high)] focus:border-[var(--primary)] focus:outline-none bg-[var(--surface-container-low)]"
+              >
+                <option value="">{t('teacher.lessonEditor.selectGrade')}</option>
+                {['4to', '5to'].map((g) => (
+                  <option key={g} value={g}>{g}</option>
+                ))}
+              </select>
+              <p className="text-xs text-[var(--on-surface-variant)] mt-1">
+                {t('teacher.lessonEditor.gradeHint')}
+              </p>
             </div>
 
             <div>

@@ -81,6 +81,7 @@ const ParentStudentLookup = React.lazy(() => import('./components/Parent/ParentS
 // Admin
 const AdminDashboard = React.lazy(() => import('./components/Admin/AdminDashboard'));
 const UserManagement = React.lazy(() => import('./components/Admin/UserManagement'));
+const StudentManager = React.lazy(() => import('./components/Staff/StudentManager'));
 const SystemConfig = React.lazy(() => import('./components/Admin/SystemConfig'));
 const ColorSettings = React.lazy(() => import('./components/Admin/ColorSettings'));
 const TranslationPanel = React.lazy(() => import('./components/Admin/TranslationPanel'));
@@ -179,6 +180,13 @@ function App() {
                     <Route element={<MainLayout />}>
                       <Route path="/coordinator/salones" element={<CoordinatorSalones />} />
                       <Route path="/teacher/salones" element={<TeacherSalones />} />
+                    </Route>
+                  </Route>
+
+                  {/* Student Manager: docente, coordinador, director y admin */}
+                  <Route element={<ProtectedRoute roles={['teacher', 'coordinador', 'director', 'admin']} />}>
+                    <Route element={<MainLayout />}>
+                      <Route path="/students-manager" element={<StudentManager />} />
                     </Route>
                   </Route>
 

@@ -29,6 +29,7 @@ const processQueue = (error, token = null) => {
 
 api.interceptors.request.use(
   (config) => {
+    config.headers['Accept-Language'] = localStorage.getItem('sim_language') || 'es';
     const token = localStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

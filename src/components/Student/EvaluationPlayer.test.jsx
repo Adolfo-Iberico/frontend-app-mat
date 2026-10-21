@@ -8,6 +8,7 @@ const { evaluationsApi, toast } = vi.hoisted(() => ({
   evaluationsApi: {
     getEvaluation: vi.fn(),
     getQuestions: vi.fn(),
+    startEvaluation: vi.fn(),
     submitEvaluation: vi.fn(),
   },
   toast: { error: vi.fn(), success: vi.fn() },
@@ -49,6 +50,9 @@ describe('EvaluationPlayer', () => {
         },
       },
     });
+    evaluationsApi.startEvaluation.mockResolvedValue({
+      data: { data: { id: 'attempt-1', started_at: new Date().toISOString(), allow_tab_switches: true } },
+    });
     evaluationsApi.submitEvaluation.mockResolvedValue({ data: { data: { status: 'completed' } } });
   });
 
@@ -62,6 +66,7 @@ describe('EvaluationPlayer', () => {
     fireEvent.click(screen.getByRole('button', { name: /evaluations.player.submit$/ }));
 
     await waitFor(() => expect(evaluationsApi.submitEvaluation).toHaveBeenCalledWith('42', {
+      attempt_id: 'attempt-1',
       answers: [
         { question_id: '1', answer: '4' },
         { question_id: '2', answer: '6' },

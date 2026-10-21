@@ -94,12 +94,23 @@ const ChatWidget = () => {
       });
     } catch (error) {
       const errorMsg = error.message || t('chat.error');
+      // Consejo acorde a la causa real (el backend la clasifica en `code`),
+      // en lugar de sugerir siempre revisar la API key.
+      let detail = '';
+      if (error.code === 'auth' || error.code === 'not_configured') {
+        detail = t('chat.errorDetail');
+      } else if (error.code === 'network') {
+        detail = t('chat.errorNetwork');
+      } else if (error.code === 'rate_limit') {
+        detail = t('chat.errorRateLimit');
+      }
+      const errorText = `**${t('common.error')}:** ${errorMsg}${detail ? `\n\n${detail}` : ''}`;
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === assistantMessage.id
             ? {
                 ...msg,
-                text: `**${t('common.error')}:** ${errorMsg}\n\n${t('chat.errorDetail')}`,
+                text: errorText,
                 isStreaming: false,
               }
             : msg

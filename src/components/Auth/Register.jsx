@@ -9,11 +9,13 @@ import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 import { FaEnvelope, FaLock, FaUser, FaGraduationCap, FaEye, FaEyeSlash, FaUsers, FaChevronDown, FaGlobe } from 'react-icons/fa';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { usePublicConfig, DEFAULT_BRAND_NAME } from '../../api/publicConfig';
 
 const Register = () => {
   const { register: registerUser, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const { t, lang, changeLanguage } = useLanguage();
+  const brand = usePublicConfig();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -231,8 +233,16 @@ const Register = () => {
 
         <div className="relative z-10 flex items-center justify-between px-10 py-8">
           <div className="flex items-center gap-2 text-white font-semibold">
-            <FaUsers className="text-purple-300" />
-            <span>Aulamate</span>
+            {brand.logo ? (
+              <img
+                src={brand.logo}
+                alt={brand.institution_name || DEFAULT_BRAND_NAME}
+                className="w-6 h-6 rounded-full object-contain"
+              />
+            ) : (
+              <FaUsers className="text-purple-300" />
+            )}
+            <span>{brand.institution_name || DEFAULT_BRAND_NAME}</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/login" className="text-white/80 hover:text-white font-medium transition">
@@ -262,7 +272,7 @@ const Register = () => {
         <div className="absolute bottom-8 left-10 z-10 text-white/40 text-xs font-mono">
           <span className="inline-flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            Aulamate v1.0
+            {brand.institution_name || DEFAULT_BRAND_NAME} v1.0
           </span>
         </div>
       </div>

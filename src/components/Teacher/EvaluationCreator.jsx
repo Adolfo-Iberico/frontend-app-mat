@@ -12,6 +12,28 @@ import Loading from '../Common/Loading';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { toArray } from '../../utils/helpers';
 
+const toLocalDateTimeInput = (value) => {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+};
+
+const toUtcDateTime = (value) => {
+  if (!value) return null;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error('La fecha límite no es válida');
+  }
+
+  return date.toISOString();
+};
+
 const EvaluationCreator = () => {
   const { t } = useLanguage();
   const { id } = useParams();
@@ -104,7 +126,7 @@ const EvaluationCreator = () => {
       setValue('type', evaluation.type);
       setValue('difficulty', evaluation.difficulty);
       setValue('time_limit', evaluation.time_limit || 30);
-      setValue('due_date', evaluation.due_date || '');
+      setValue('due_date', toLocalDateTimeInput(evaluation.due_date));
       setValue('max_attempts', evaluation.max_attempts || 1);
       setValue('questions', toArray(evaluation.questions));
     } catch (error) {
@@ -117,11 +139,15 @@ const EvaluationCreator = () => {
   const onSubmit = async (data) => {
     try {
       setSaving(true);
+      const evaluationData = {
+        ...data,
+        due_date: toUtcDateTime(data.due_date)
+      };
       if (id) {
-        await evaluationsApi.updateEvaluation(id, data);
+        await evaluationsApi.updateEvaluation(id, evaluationData);
         toast.success(t('teacher.evaluationCreator.saveSuccess'));
       } else {
-        await evaluationsApi.createEvaluation(data);
+        await evaluationsApi.createEvaluation(evaluationData);
         toast.success(t('teacher.evaluationCreator.saveSuccess'));
       }
       navigate('/evaluations');

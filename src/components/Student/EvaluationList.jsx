@@ -63,6 +63,18 @@ const EvaluationList = () => {
     };
   };
 
+  const now = Date.now();
+  const orderedEvaluations = isStaff
+    ? evaluations
+    : [...evaluations].sort((first, second) => {
+        const priority = (evaluation) => {
+          if (evaluation.user_result?.status === 'completed') return 1;
+          if (evaluation.due_date && new Date(evaluation.due_date).getTime() < now) return 2;
+          return 0;
+        };
+        return priority(first) - priority(second);
+      });
+
   if (loading) return <Loading />;
 
   return (
@@ -116,7 +128,7 @@ const EvaluationList = () => {
 
       {/* Evaluations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {evaluations.map((evaluation) => {
+        {orderedEvaluations.map((evaluation) => {
           const status = getStatusBadge(evaluation);
           return (
             <div

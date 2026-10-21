@@ -3,11 +3,12 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { 
-  FaHome, FaBook, FaClipboardList, FaChartBar, 
+import { usePublicConfig, DEFAULT_BRAND_NAME } from '../../api/publicConfig';
+import {
+  FaHome, FaBook, FaClipboardList, FaChartBar,
   FaUsers, FaCog, FaQuestionCircle, FaPlus, FaChild,
   FaTrophy, FaChalkboardTeacher, FaLanguage, FaFlask, FaComments, FaUserFriends, FaDoorOpen, FaGamepad,
-  FaChevronDown, FaChevronRight
+  FaChevronDown, FaChevronRight, FaUserGraduate
 } from 'react-icons/fa';
 
 const Sidebar = () => {
@@ -15,6 +16,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isTeacher, isParent, isStudent, isCoordinator, isDirector } = useAuth();
   const { t } = useLanguage();
+  const brand = usePublicConfig();
   const [openCats, setOpenCats] = useState({});
 
   const isActive = (path) => location.pathname === path;
@@ -69,6 +71,9 @@ const Sidebar = () => {
   if (isTeacher() || isAdmin()) {
     communityItems.push(navItem('/reports', t('nav.reports'), FaChartBar));
     communityItems.push(navItem('/teacher/calendar', t('nav.calendar'), FaChalkboardTeacher));
+  }
+  if (isTeacher() || isCoordinator() || isDirector() || isAdmin()) {
+    communityItems.push(navItem('/students-manager', t('nav.studentsManager'), FaUserGraduate));
   }
   if (isTeacher() || isStudent()) {
     communityItems.push(navItem('/messages', t('nav.messages'), FaComments));
@@ -130,11 +135,21 @@ const Sidebar = () => {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 bg-[var(--surface-container)] flex flex-col z-40 hidden md:flex border-r border-[var(--outline-variant)]/20">
       <div className="px-6 py-8 flex items-center gap-3">
-        <div className="w-10 h-10 bg-[var(--primary)] rounded-xl flex items-center justify-center text-white">
-          <span className="text-2xl font-bold">∑</span>
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-[var(--primary)]">Aulamate</h1>
+        {brand.logo ? (
+          <img
+            src={brand.logo}
+            alt={brand.institution_name || DEFAULT_BRAND_NAME}
+            className="w-10 h-10 rounded-xl object-contain"
+          />
+        ) : (
+          <div className="w-10 h-10 bg-[var(--primary)] rounded-xl flex items-center justify-center text-white shrink-0">
+            <span className="text-2xl font-bold">∑</span>
+          </div>
+        )}
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold text-[var(--primary)] leading-tight break-words">
+            {brand.institution_name || DEFAULT_BRAND_NAME}
+          </h1>
           <p className="text-[10px] uppercase tracking-widest text-[var(--on-surface-variant)]">
             {user?.role?.name ? t(`topbar.role.${user.role.name}`) : t('nav.dashboard')}
           </p>

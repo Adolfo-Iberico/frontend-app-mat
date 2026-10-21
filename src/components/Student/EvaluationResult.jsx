@@ -2,11 +2,26 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { evaluationsApi } from '../../api/evaluations';
-import { FaCheckCircle, FaTimesCircle, FaClock, FaArrowLeft, FaDownload } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaClock, FaArrowLeft, FaDownload, FaFileExcel } from 'react-icons/fa';
 import { formatDate, formatDateTime, toArray } from '../../utils/helpers';
 import Loading from '../Common/Loading';
 import toast from 'react-hot-toast';
 import { useLanguage } from '../../contexts/LanguageContext';
+
+const downloadExport = (blob, filename, expectedContentType) => {
+  if (!(blob instanceof Blob) || !blob.type.includes(expectedContentType)) {
+    throw new Error('El servidor no devolvió un archivo válido');
+  }
+
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => window.URL.revokeObjectURL(url), 0);
+};
 
 const EvaluationResult = () => {
   const { t } = useLanguage();
@@ -14,8 +29,10 @@ const EvaluationResult = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
   const [evaluation, setEvaluation] = useState(null);
+  const [institutionName, setInstitutionName] = useState('');
   const [loading, setLoading] = useState(true);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [exportingExcel, setExportingExcel] = useState(false);
 
   useEffect(() => {
     fetchResults();
@@ -32,6 +49,8 @@ const EvaluationResult = () => {
         setResult(lastResult);
         const evalRes = await evaluationsApi.getEvaluation(id);
         setEvaluation(evalRes.data.data);
+        const configRes = await evaluationsApi.getPublicConfig();
+        setInstitutionName(configRes.data?.institution_name || '');
       } else {
         toast.error(t('evaluations.result.noResults'));
         navigate('/evaluations');
@@ -47,20 +66,28 @@ const EvaluationResult = () => {
   const handleDownloadPdf = async () => {
     try {
       setExportingPdf(true);
-      const response = await evaluationsApi.getResults(id);
-      const blobData = response.data;
-      const url = window.URL.createObjectURL(new Blob([blobData]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `evaluacion-${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      toast.error(t('evaluations.result.loadError'));
+      const response = await evaluationsApi.exportResultPdf(id, result.id);
+      downloadExport(response.data, `evaluacion-${id}.pdf`, 'application/pdf');
+    } catch {
+      toast.error(t('evaluations.result.exportError'));
     } finally {
       setExportingPdf(false);
+    }
+  };
+
+  const handleDownloadExcel = async () => {
+    try {
+      setExportingExcel(true);
+      const response = await evaluationsApi.exportResultExcel(id, result.id);
+      downloadExport(
+        response.data,
+        `evaluacion-${id}.xlsx`,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+    } catch {
+      toast.error(t('evaluations.result.exportError'));
+    } finally {
+      setExportingExcel(false);
     }
   };
 
@@ -103,16 +130,36 @@ const EvaluationResult = () => {
             <p className="text-[var(--on-surface-variant)]">
               {t('evaluations.result.completedOn')} {formatDateTime(result.completed_at)}
             </p>
+            <p className="mt-2 text-sm text-[var(--on-surface-variant)]">
+              {t('evaluations.result.startedOn')}: {formatDateTime(result.started_at)}
+              {' · '}{t('evaluations.result.duration')}: {Number.isFinite(Number(result.time_taken))
+                ? `${Math.floor(result.time_taken / 3600)}:${String(Math.floor((result.time_taken % 3600) / 60)).padStart(2, '0')}:${String(result.time_taken % 60).padStart(2, '0')}`
+                : '--:--:--'}
+            </p>
+            <p className="text-sm text-[var(--on-surface-variant)]">
+              {t('evaluations.result.teacher')}: {evaluation.lesson?.course?.teacher?.full_name || evaluation.teacher?.full_name || '—'}
+              {' · '}{t('evaluations.result.course')}: {evaluation.lesson?.course?.name || evaluation.lesson?.title || '—'}
+              {' · '}{t('evaluations.result.school')}: {institutionName || '—'}
+            </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={handleDownloadPdf}
-              disabled={exportingPdf}
+              disabled={exportingPdf || exportingExcel}
               className="px-4 py-2 border border-[var(--outline-variant)] rounded-xl text-sm font-medium hover:bg-[var(--surface-container-low)] transition-colors flex items-center gap-2 disabled:opacity-50"
               aria-label={t('evaluations.result.downloadPdf') || 'Descargar PDF'}
             >
               <FaDownload className="w-4 h-4" />
               {exportingPdf ? t('evaluations.result.exporting') : t('evaluations.result.downloadPdf')}
+            </button>
+            <button
+              onClick={handleDownloadExcel}
+              disabled={exportingPdf || exportingExcel}
+              className="px-4 py-2 border border-[var(--outline-variant)] rounded-xl text-sm font-medium hover:bg-[var(--surface-container-low)] transition-colors flex items-center gap-2 disabled:opacity-50"
+              aria-label={t('evaluations.result.downloadExcel') || 'Descargar Excel'}
+            >
+              <FaFileExcel className="w-4 h-4" />
+              {exportingExcel ? t('evaluations.result.exporting') : t('evaluations.result.downloadExcel')}
             </button>
           </div>
         </div>
@@ -184,18 +231,21 @@ const EvaluationResult = () => {
       {/* Question Review */}
       <div className="space-y-4">
         <h3 className="text-xl font-bold text-[var(--on-surface)]">{t('evaluations.result.questionReview')}</h3>
-        {result.student_answers && result.student_answers.map((answer, index) => (
+        {result.student_answers && result.student_answers.map((answer, index) => {
+          const partiallyCorrect = !answer.is_correct && Number(answer.points_earned) > 0;
+          const answerIsPositive = answer.is_correct || partiallyCorrect;
+          return (
           <div
             key={answer.id}
             className={`p-6 rounded-2xl border-l-4 ${
-              answer.is_correct
+              answerIsPositive
                 ? 'border-[var(--secondary)] bg-[var(--surface)]'
                 : 'border-[var(--error)] bg-[var(--surface)]'
             } shadow-sm hover:shadow-md transition-all`}
           >
             <div className="flex items-start gap-4">
               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                answer.is_correct ? 'bg-[var(--secondary)]' : 'bg-[var(--error)]'
+                answerIsPositive ? 'bg-[var(--secondary)]' : 'bg-[var(--error)]'
               }`}>
                 {index + 1}
               </div>
@@ -205,31 +255,38 @@ const EvaluationResult = () => {
                     {answer.question?.question_text || t('evaluations.result.noText')}
                   </h4>
                   <span className={`flex items-center gap-1 text-sm font-bold ${
-                    answer.is_correct ? 'text-[var(--secondary)]' : 'text-[var(--error)]'
+                    answerIsPositive ? 'text-[var(--secondary)]' : 'text-[var(--error)]'
                   }`}>
-                    {answer.is_correct ? (
+                    {answerIsPositive ? (
                       <FaCheckCircle className="w-4 h-4" />
                     ) : (
                       <FaTimesCircle className="w-4 h-4" />
                     )}
-                    {answer.is_correct ? t('evaluations.result.correct') : t('evaluations.result.incorrect')}
+                    {answer.is_correct
+                      ? t('evaluations.result.correct')
+                      : partiallyCorrect
+                        ? t('evaluations.result.partiallyCorrect')
+                        : t('evaluations.result.incorrect')}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   <div className="p-3 bg-[var(--surface-container-low)] rounded-lg">
                     <p className="text-xs text-[var(--on-surface-variant)]">{t('evaluations.result.yourAnswer')}</p>
-                    <p className={`font-mono ${answer.is_correct ? 'text-[var(--secondary)]' : 'text-[var(--error)]'}`}>
-                      {answer.answer || t('evaluations.result.noAnswer')}
+                    <p className={`font-mono ${answerIsPositive ? 'text-[var(--secondary)]' : 'text-[var(--error)]'}`}>
+                      {answer.answer_display || answer.answer || t('evaluations.result.noAnswer')}
                     </p>
                   </div>
-                  {!answer.is_correct && answer.question?.correct_answer && (
+                  {!answer.is_correct && (answer.question?.correct_answer_display || answer.question?.correct_answer) && (
                     <div className="p-3 bg-[var(--secondary)]/10 rounded-lg border border-[var(--secondary)]/20">
                       <p className="text-xs text-[var(--on-surface-variant)]">{t('evaluations.result.correctAnswer')}</p>
                       <p className="font-mono text-[var(--secondary)]">
-                        {answer.question.correct_answer}
+                        {answer.question.correct_answer_display || answer.question.correct_answer}
                       </p>
                     </div>
                   )}
+                  <p className="mt-2 text-xs text-[var(--on-surface-variant)]">
+                    {t('evaluations.result.pointsEarned')}: {Number(answer.points_earned || 0)} / {Number(answer.question?.points || 1)}
+                  </p>
                 </div>
                 {answer.question?.explanation && (
                   <div className="mt-3 p-3 bg-[var(--surface-container-low)] rounded-lg">
@@ -242,7 +299,8 @@ const EvaluationResult = () => {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Suggested Actions */}

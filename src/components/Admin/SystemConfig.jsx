@@ -16,7 +16,8 @@ const SystemConfig = () => {
     secondary_color: '#006C49',
     logo: '',
     email_notifications: {},
-    backup_frequency: 'daily'
+    backup_frequency: 'daily',
+    allow_tab_switches: true,
   });
   const [periods, setPeriods] = useState([]);
   const [newPeriod, setNewPeriod] = useState({
@@ -192,6 +193,27 @@ const SystemConfig = () => {
               <option value="monthly">{cp('monthly')}</option>
             </select>
           </div>
+
+          <label className="flex items-start gap-3 rounded-xl border border-[var(--surface-container-high)] p-4">
+            <input
+              type="checkbox"
+              name="allow_tab_switches"
+              checked={config.allow_tab_switches !== false}
+              onChange={(event) => setConfig((current) => ({
+                ...current,
+                allow_tab_switches: event.target.checked,
+              }))}
+              className="mt-1 accent-[var(--primary)]"
+            />
+            <span>
+              <span className="block text-sm font-medium text-[var(--on-surface)]">
+                {cp('allowTabSwitches')}
+              </span>
+              <span className="block text-sm text-[var(--on-surface-variant)]">
+                {cp('allowTabSwitchesDescription')}
+              </span>
+            </span>
+          </label>
         </div>
 
         <div className="mt-6">

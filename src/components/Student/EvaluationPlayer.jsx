@@ -1,5 +1,5 @@
 // Presents an evaluation's questions and submits the student's answers.
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { FaArrowLeft, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -7,6 +7,7 @@ import { evaluationsApi } from '../../api/evaluations';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { toArray } from '../../utils/helpers';
 import Loading from '../Common/Loading';
+import { logger } from '../../utils/logger';
 
 const EvaluationPlayer = () => {
   const { id } = useParams();
@@ -18,6 +19,13 @@ const EvaluationPlayer = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [attempt, setAttempt] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const [allowTabSwitches, setAllowTabSwitches] = useState(true);
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
+  const [tabWarningVisible, setTabWarningVisible] = useState(false);
+  const autoSubmitTriggered = useRef(false);
+  const tabReportRequests = useRef([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,13 +45,18 @@ const EvaluationPlayer = () => {
         if (!data || !loadedQuestions.length) {
           throw new Error(t('evaluations.player.noQuestions'));
         }
+        const attemptResponse = await evaluationsApi.startEvaluation(id);
+        const startedAttempt = attemptResponse.data?.data ?? attemptResponse.data;
         if (!cancelled) {
           setEvaluation(data);
           setQuestions(loadedQuestions);
+          setAttempt(startedAttempt);
+          setAllowTabSwitches(startedAttempt?.allow_tab_switches !== false);
+          setTabSwitchCount(startedAttempt?.tab_switch_count ?? 0);
         }
       } catch (error) {
         if (!cancelled) {
-          toast.error(error.message || error.response?.data?.message || t('evaluations.player.loadError'));
+          toast.error(error.response?.data?.message || error.message || t('evaluations.player.loadError'));
           navigate('/evaluations');
         }
       } finally {
@@ -61,26 +74,36 @@ const EvaluationPlayer = () => {
     setAnswers((current) => ({ ...current, [questionId]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(async (event, forced = false) => {
+    event?.preventDefault();
+    if (submitting) return;
     const unanswered = questions.some((question, index) => {
       const answer = answers[question.id ?? index];
       return answer === undefined || answer === null || String(answer).trim() === '';
     });
 
-    if (unanswered) {
+    if (unanswered && !forced) {
       toast.error(t('evaluations.player.answerAll'));
       return;
     }
 
     try {
       setSubmitting(true);
-      await evaluationsApi.submitEvaluation(id, {
-        answers: questions.map((question, index) => ({
-          question_id: String(question.id ?? index),
-          answer: String(answers[question.id ?? index]),
-        })),
+      await Promise.allSettled(tabReportRequests.current);
+      const response = await evaluationsApi.submitEvaluation(id, {
+        attempt_id: attempt?.id,
+        answers: questions
+          .filter((question, index) => {
+            const answer = answers[question.id ?? index];
+            return answer !== undefined && answer !== null && String(answer).trim() !== '';
+          })
+          .map((question, index) => ({
+            question_id: String(question.id ?? index),
+            answer: String(answers[question.id ?? index]),
+          })),
       });
+      const resultData = response.data?.data ?? response.data;
+      if (resultData?.grading_warning) toast.error(resultData.grading_warning);
       toast.success(t('evaluations.player.submitSuccess'));
       navigate(`/evaluations/${id}/result`);
     } catch (error) {
@@ -88,7 +111,54 @@ const EvaluationPlayer = () => {
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [answers, attempt?.id, id, navigate, questions, submitting, t]);
+
+  useEffect(() => {
+    if (!attempt?.started_at || !evaluation?.time_limit) return undefined;
+
+    const updateRemaining = () => {
+      const elapsed = Math.max(0, Math.floor((Date.now() - Date.parse(attempt.started_at)) / 1000));
+      setTimeRemaining(Math.max(0, evaluation.time_limit * 60 - elapsed));
+    };
+
+    updateRemaining();
+    const interval = window.setInterval(updateRemaining, 1000);
+    return () => window.clearInterval(interval);
+  }, [attempt?.started_at, evaluation?.time_limit]);
+
+  useEffect(() => {
+    if (allowTabSwitches || !attempt) return undefined;
+
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = '';
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setTabSwitchCount((count) => count + 1);
+        const reportRequest = evaluationsApi.reportTabSwitch(id, attempt.id).catch((error) => {
+          logger.error('Failed to record evaluation tab switch:', error);
+        });
+        tabReportRequests.current.push(reportRequest);
+      } else {
+        setTabWarningVisible(true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [allowTabSwitches, attempt]);
+
+  useEffect(() => {
+    if (timeRemaining !== 0 || !attempt || autoSubmitTriggered.current) return;
+    autoSubmitTriggered.current = true;
+    void handleSubmit(null, true);
+  }, [attempt, handleSubmit, timeRemaining]);
 
   if (loading) return <Loading />;
   if (!evaluation || !questions.length) return null;
@@ -97,12 +167,21 @@ const EvaluationPlayer = () => {
   const questionId = currentQuestion.id ?? currentIndex;
   const options = Array.isArray(currentQuestion.options) ? currentQuestion.options : [];
   const answerValue = answers[questionId] ?? '';
+  const remainingLabel = timeRemaining === null
+    ? null
+    : `${Math.floor(timeRemaining / 60)}:${String(timeRemaining % 60).padStart(2, '0')}`;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
+    <form onSubmit={(event) => handleSubmit(event)} className="max-w-4xl mx-auto space-y-6">
       <button
         type="button"
-        onClick={() => navigate('/evaluations')}
+        onClick={() => {
+          if (allowTabSwitches) {
+            navigate('/evaluations');
+          } else {
+            setTabWarningVisible(true);
+          }
+        }}
         className="flex items-center gap-2 text-[var(--on-surface-variant)] hover:text-[var(--primary)]"
       >
         <FaArrowLeft />
@@ -117,7 +196,14 @@ const EvaluationPlayer = () => {
         <p className="mt-3 text-sm text-[var(--on-surface-variant)]">
           {t('evaluations.player.question')} {currentIndex + 1} {t('evaluations.player.of')} {questions.length}
           {evaluation.time_limit ? ` · ${evaluation.time_limit} min` : ''}
+          {remainingLabel !== null && ` · ${t('evaluations.player.timeRemaining')}: ${remainingLabel}`}
         </p>
+        {!allowTabSwitches && (
+          <p className="mt-2 text-sm font-medium text-amber-700" role="status">
+            {t('evaluations.player.tabSwitchTracking')}
+            {tabSwitchCount > 0 && ` (${tabSwitchCount})`}
+          </p>
+        )}
       </header>
 
       <section className="bg-[var(--surface)] rounded-2xl p-6 md:p-8 border border-[var(--surface-container)]">
@@ -228,6 +314,21 @@ const EvaluationPlayer = () => {
           );
         })}
       </nav>
+      {tabWarningVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="alertdialog" aria-modal="true">
+          <div className="max-w-md rounded-2xl bg-[var(--surface)] p-6 shadow-xl">
+            <p className="font-bold text-[var(--on-surface)]">{t('evaluations.player.tabSwitchDetected')}</p>
+            <p className="mt-2 text-sm text-[var(--on-surface-variant)]">{t('evaluations.player.tabSwitchRecorded')}</p>
+            <button
+              type="button"
+              onClick={() => setTabWarningVisible(false)}
+              className="mt-4 rounded-xl bg-[var(--primary)] px-4 py-2 font-bold text-white"
+            >
+              {t('evaluations.player.continue')}
+            </button>
+          </div>
+        </div>
+      )}
     </form>
   );
 };

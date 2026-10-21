@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { FaUser, FaEnvelope, FaLock, FaSave, FaGoogle } from 'react-icons/fa';
 import Loading from '../Common/Loading';
+import UserAvatar from './UserAvatar';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 const Profile = () => {
@@ -96,9 +97,7 @@ const Profile = () => {
       </div>
 
       <div className="bg-[var(--surface)] rounded-2xl p-8 shadow-sm border border-[var(--surface-container)] flex items-center gap-6">
-        <div className="w-20 h-20 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-3xl font-bold text-[var(--primary)]">
-          {profile?.full_name?.charAt(0)?.toUpperCase() || t('profile.user').charAt(0)}
-        </div>
+        <UserAvatar user={profile} className="h-20 w-20 text-3xl" />
         <div>
           <h3 className="text-xl font-bold text-[var(--on-surface)]">{profile?.full_name || t('profile.user')}</h3>
           <p className="text-[var(--on-surface-variant)]">{profile?.email}</p>

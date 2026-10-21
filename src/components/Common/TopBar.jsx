@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { FaSearch, FaBell, FaUserCircle, FaBars } from 'react-icons/fa';
+import UserAvatar from './UserAvatar';
 
 const TopBar = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
@@ -85,9 +86,7 @@ const TopBar = ({ onMenuClick }) => {
             aria-controls="topbar-user-menu"
             aria-label={user?.full_name || 'Menú de usuario'}
           >
-            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] font-bold">
-              {user?.full_name?.charAt(0) || 'U'}
-            </div>
+            <UserAvatar user={user} className="h-10 w-10" />
             <div className="hidden sm:block text-left">
               <p className="text-xs font-bold text-[var(--on-surface)]">
                 {user?.full_name || 'Usuario'}

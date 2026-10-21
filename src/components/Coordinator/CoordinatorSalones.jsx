@@ -549,11 +549,7 @@ const [importing, setImporting] = useState(false);
   // ---- Vista principal: salones ----
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-[var(--on-surface)]">{cp('title')}</h2>
-          <p className="text-[var(--on-surface-variant)]">{cp('subtitle')}</p>
-        </div>
+      <div className="flex items-center justify-end">
         <button
           onClick={() => setShowCreateSalon((v) => !v)}
           className="px-4 py-2 bg-[var(--primary)] text-white rounded-xl hover:opacity-90 flex items-center gap-2 font-bold"
