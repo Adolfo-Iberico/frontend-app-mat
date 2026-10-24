@@ -6,6 +6,7 @@ import { FaArrowLeft, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons
 import { evaluationsApi } from '../../api/evaluations';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { toArray } from '../../utils/helpers';
+import { normalizeQuestionOptions } from '../../utils/questionOptions';
 import Loading from '../Common/Loading';
 import { logger } from '../../utils/logger';
 
@@ -165,7 +166,7 @@ const EvaluationPlayer = () => {
 
   const currentQuestion = questions[currentIndex];
   const questionId = currentQuestion.id ?? currentIndex;
-  const options = Array.isArray(currentQuestion.options) ? currentQuestion.options : [];
+  const options = normalizeQuestionOptions(currentQuestion.options);
   const answerValue = answers[questionId] ?? '';
   const remainingLabel = timeRemaining === null
     ? null
@@ -222,7 +223,7 @@ const EvaluationPlayer = () => {
         {options.length > 0 ? (
           <div className="space-y-3">
             {options.map((option, optionIndex) => {
-              const value = option.value ?? option.label ?? String(optionIndex);
+              const value = option.value;
               return (
                 <label
                   key={`${value}-${optionIndex}`}
@@ -241,7 +242,7 @@ const EvaluationPlayer = () => {
                     className="accent-[var(--primary)]"
                   />
                   <span className="font-medium text-[var(--on-surface)]">
-                    {option.label && option.value ? `${option.label}. ` : ''}{option.value ?? option.label}
+                    {option.label && option.value ? `${option.label}. ` : ''}{option.value}
                   </span>
                 </label>
               );

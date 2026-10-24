@@ -85,4 +85,25 @@ describe('EvaluationPlayer', () => {
     expect(toast.error).toHaveBeenCalledWith('evaluations.player.answerAll');
     expect(evaluationsApi.submitEvaluation).not.toHaveBeenCalled();
   });
+
+  it('muestra alternativas guardadas como JSON anidado', async () => {
+    evaluationsApi.getEvaluation.mockResolvedValue({
+      data: {
+        data: {
+          id: 42,
+          title: 'Quiz con opciones heredadas',
+          questions: [{
+            id: 3,
+            question_text: 'Elige una alternativa',
+            options: JSON.stringify(JSON.stringify(['Primera alternativa', 'Segunda alternativa'])),
+          }],
+        },
+      },
+    });
+
+    renderPlayer();
+
+    expect(await screen.findByRole('radio', { name: 'Primera alternativa' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Segunda alternativa' })).toBeInTheDocument();
+  });
 });

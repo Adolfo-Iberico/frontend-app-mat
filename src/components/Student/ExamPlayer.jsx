@@ -6,6 +6,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../hooks/useAuth';
 import useAntiCheat from '../../hooks/useAntiCheat';
 import { TRUE_FALSE_OPTIONS } from '../../utils/constants';
+import { normalizeQuestionOptions } from '../../utils/questionOptions';
 import { DragDropQuestion } from '../Common/DragDropQuestion';
 import Loading from '../Common/Loading';
 import toast from 'react-hot-toast';
@@ -247,14 +248,18 @@ const ExamPlayer = () => {
   };
 
   const buildDragItems = (question) => {
-    const opts = question.options || [];
-    const items = opts.map((label, i) => ({ id: `${question.id}_item_${i}`, label }));
+    const opts = normalizeQuestionOptions(question.options);
+    const items = opts.map((option, i) => ({ id: `${question.id}_item_${i}`, label: option.value }));
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [items[i], items[j]] = [items[j], items[i]];
     }
     return items;
   };
+
+  const currentQuestion = questions[currentIndex];
+  const totalQuestions = questions.length;
+  const answeredCount = Object.keys(answers).length;
 
   const dragItems = useMemo(() => {
     if (!currentQuestion || currentQuestion.type !== 'drag_drop') return [];
@@ -266,9 +271,7 @@ const ExamPlayer = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: ordered.map((i) => i.id) }));
   };
 
-  const currentQuestion = questions[currentIndex];
-  const totalQuestions = questions.length;
-  const answeredCount = Object.keys(answers).length;
+  const currentOptions = normalizeQuestionOptions(currentQuestion?.options);
 
   if (loading) return <Loading />;
 
@@ -480,19 +483,25 @@ const ExamPlayer = () => {
             />
           ) : (
             <div className="space-y-3">
-              {(currentQuestion.options || []).map((opt, i) => (
+              {currentOptions.map((opt, i) => (
                 <button
                   key={i}
-                  onClick={() => handleAnswer(currentQuestion.id, opt)}
+                  onClick={() => handleAnswer(currentQuestion.id, opt.value)}
                   disabled={submitPending}
                   className={`w-full text-left p-4 rounded-xl border-2 transition-all font-medium ${
-                    answers[currentQuestion.id] === opt
+                    answers[currentQuestion.id] === opt.value
                       ? 'border-[var(--primary)] bg-[var(--primary)]/10 text-[var(--primary)]'
                       : 'border-[var(--outline-variant)] hover:border-[var(--primary)]/50 text-[var(--on-surface)]'
                   } disabled:opacity-60`}
                 >
-                  <span className="font-bold mr-2">{String.fromCharCode(65 + i)}.</span>
-                  {opt}
+                  {opt.label ? (
+                    <span>{opt.value !== opt.label ? `${opt.label}. ${opt.value}` : opt.value}</span>
+                  ) : (
+                    <>
+                      <span className="font-bold mr-2">{String.fromCharCode(65 + i)}.</span>
+                      {opt.value}
+                    </>
+                  )}
                 </button>
               ))}
             </div>
