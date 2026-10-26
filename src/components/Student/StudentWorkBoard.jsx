@@ -21,7 +21,7 @@ const StudentWorkBoard = () => {
   const fetchWorks = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/student/works');
+      const res = await api.get('/submitted-works');
       setWorks(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch {
       setWorks([]);

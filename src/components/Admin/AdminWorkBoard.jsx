@@ -42,8 +42,8 @@ const AdminWorkBoard = () => {
       const params = {};
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
       const [worksRes, statsRes] = await Promise.allSettled([
-        api.get('/admin/works', { params, signal: controller.signal }),
-        api.get('/admin/works/stats', { signal: controller.signal }),
+        api.get('/submitted-works', { params, signal: controller.signal }),
+        api.get('/submitted-works/stats', { signal: controller.signal }),
       ]);
       if (worksRes.status === 'fulfilled') {
         setWorks(Array.isArray(worksRes.value.data?.data) ? worksRes.value.data.data : []);
@@ -63,7 +63,7 @@ const AdminWorkBoard = () => {
     try {
       const params = { format };
       Object.entries(filters).forEach(([k, v]) => { if (v) params[k] = v; });
-      const res = await api.get('/admin/works/export', { params, responseType: 'blob' });
+      const res = await api.get('/submitted-works/export', { params, responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement('a');
       link.href = url;

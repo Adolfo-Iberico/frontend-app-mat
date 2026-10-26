@@ -45,7 +45,7 @@ const TeacherWorkBoard = () => {
       if (filters.course) params.course = filters.course;
       if (filters.status) params.status = filters.status;
       if (filters.work_type) params.work_type = filters.work_type;
-      const res = await api.get('/teacher/works', { params, signal: controller.signal });
+      const res = await api.get('/submitted-works', { params, signal: controller.signal });
       setWorks(Array.isArray(res.data?.data) ? res.data.data : []);
     } catch (err) {
       if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return;
@@ -66,7 +66,7 @@ const TeacherWorkBoard = () => {
       return;
     }
     try {
-      await api.post(`/teacher/works/${work.id}/grade`, { score: numScore, feedback });
+      await api.post(`/submitted-works/${work.id}/grade`, { score: numScore, feedback });
       toast.success(t('teacherWorkBoard.graded'));
       setGradingWork(null);
       setScore('');
@@ -79,7 +79,7 @@ const TeacherWorkBoard = () => {
 
   const handleReturn = async (work) => {
     try {
-      await api.post(`/teacher/works/${work.id}/return`, { feedback });
+      await api.post(`/submitted-works/${work.id}/return`, { feedback });
       toast.success(t('teacherWorkBoard.returned'));
       setGradingWork(null);
       setScore('');
@@ -105,7 +105,7 @@ const TeacherWorkBoard = () => {
       return;
     }
     try {
-      await api.post('/teacher/works/batch-grade', {
+      await api.post('/submitted-works/batch-grade', {
         work_ids: selectedWorks,
         score: numScore,
         feedback,
@@ -211,7 +211,7 @@ const TeacherWorkBoard = () => {
             type="number"
             min="0"
             max="20"
-            step="0.1"
+            step="1"
             placeholder={t('teacherWorkBoard.scorePlaceholder')}
             value={score}
             onChange={(e) => setScore(e.target.value)}
@@ -307,7 +307,7 @@ const TeacherWorkBoard = () => {
                           type="number"
                           min="0"
                           max="20"
-                          step="0.1"
+                          step="1"
                           placeholder={t('teacherWorkBoard.scorePlaceholder')}
                           value={score}
                           onChange={(e) => setScore(e.target.value)}
