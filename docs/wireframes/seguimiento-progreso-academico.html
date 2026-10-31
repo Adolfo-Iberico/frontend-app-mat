@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Módulo de Seguimiento del Progreso Académico</title>
+<style>
+  :root {
+    --line: #9aa4b0;
+    --fill: #eef1f4;
+    --fill2: #dfe4e9;
+    --ink: #2b3440;
+    --muted: #6b7684;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); background: #fff; padding: 32px; }
+  .page { max-width: 1100px; margin: 0 auto; }
+
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  h2.screen-title { font-size: 15px; margin: 40px 0 4px; display: flex; align-items: center; gap: 8px; }
+  h2 .chip { background: var(--ink); color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; letter-spacing: .5px; }
+  .screen-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .screen-meta code { background: var(--fill); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+  /* Marco tipo navegador */
+  .frame { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+  .chrome { background: var(--fill2); border-bottom: 1px solid var(--line); padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #c3cad2; }
+  .urlbar { flex: 1; background: #fff; border: 1px solid var(--line); border-radius: 12px; font-size: 11px; color: var(--muted); padding: 4px 12px; font-family: Consolas, monospace; }
+
+  .content { padding: 18px; }
+
+  /* Componentes wireframe */
+  .navrow { display: flex; justify-content: space-between; align-items: center; border: 1px dashed var(--line); padding: 10px 14px; margin-bottom: 18px; border-radius: 6px; background: var(--fill); }
+  .navlinks { display: flex; gap: 18px; }
+  .navlinks span { font-size: 11px; color: var(--muted); }
+  .logo-box { width: 90px; height: 14px; background: var(--line); border-radius: 3px; }
+  .avatar-circle { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); background: var(--fill2); }
+
+  .titlebar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .titlebar .icon-sq { width: 28px; height: 28px; background: var(--line); border-radius: 6px; }
+  .titlebar h3 { font-size: 17px; font-weight: 700; }
+  .titlebar p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .card { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+  .card .cover { height: 72px; background: var(--fill2); border-bottom: 1px solid var(--line); display:flex; align-items:center; justify-content:center; }
+  .cover .img-ph { width: 56px; height: 40px; border: 1px dashed var(--line); border-radius: 4px; }
+  .card .body { padding: 12px; }
+  .card .badge-row { display: flex; gap: 6px; margin-bottom: 8px; }
+  .badge { font-size: 9px; border: 1px solid var(--line); color: var(--muted); padding: 1px 7px; border-radius: 8px; }
+  .line { height: 8px; background: var(--fill2); border-radius: 3px; margin: 7px 0; }
+  .line.w60 { width: 60%; } .line.w80 { width: 80%; } .line.w40 { width: 40%; }
+
+  .progress-track { height: 8px; background: var(--fill); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .progress-fill { height: 100%; background: #8fa1b3; }
+  .pct-label { font-size: 10px; color: var(--muted); }
+
+  .btn { display: inline-block; border: 1px solid var(--line); padding: 7px 14px; border-radius: 6px; font-size: 11px; color: var(--ink); background: var(--fill); }
+  .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .section-head { display: flex; align-items: center; gap: 10px; margin: 26px 0 14px; }
+  .section-head .icon-sq { width: 22px; height: 22px; background: var(--line); border-radius: 5px; }
+  .section-head h4 { font-size: 14px; font-weight: 700; }
+
+  .stat-card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fff; }
+  .stat-card .label { font-size: 10px; color: var(--muted); display:flex; justify-content:space-between; align-items:center; }
+  .stat-card .value { font-size: 22px; font-weight: 800; margin: 6px 0 2px; }
+  .stat-card .hint { font-size: 9px; color: var(--muted); }
+
+  .divider { border-top: 1px dashed var(--line); margin: 24px 0; }
+
+  .alert-box { border: 1px solid var(--line); background: var(--fill); border-radius: 8px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px; }
+  .alert-box .icon-sq { width: 20px; height: 20px; background: var(--line); border-radius: 5px; flex-shrink: 0; }
+  .alert-box .a-title { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+  .alert-box .a-text { font-size: 10px; color: var(--muted); }
+
+  .two-col { display: grid; grid-template-columns: 240px 1fr; gap: 16px; }
+  .sidebar { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .sidebar h5 { font-size: 11px; margin-bottom: 10px; color: var(--muted); font-weight: 600; }
+  .res-item { display: flex; align-items: center; gap: 8px; padding: 8px 4px; border-bottom: 1px dashed var(--line); }
+  .res-item:last-child { border-bottom: none; }
+  .checkbox { width: 13px; height: 13px; border: 1px solid var(--line); border-radius: 3px; background: #fff; flex-shrink: 0; }
+  .checkbox.checked { background: var(--line); }
+  .res-item .r-line { flex: 1; height: 7px; background: var(--fill2); border-radius: 3px; }
+  .res-item.done .r-line { background: var(--line); }
+
+  .lesson-panel { border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; border: 1px dashed var(--line); border-radius: 6px; padding: 10px 12px; margin-top: 14px; background: var(--fill); }
+  .toggle-pill { width: 34px; height: 16px; border: 1px solid var(--line); border-radius: 10px; position: relative; background: #fff; }
+  .toggle-pill::after { content: ''; position: absolute; top: 1px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
+  .toggle-pill.on::after { left: 18px; }
+
+  .chart-box { border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+  .chart-title { font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+  .bars { display: flex; align-items: flex-end; gap: 18px; height: 120px; padding: 0 8px; border-bottom: 1px solid var(--line); }
+  .bar { width: 34px; background: #a9b6c2; border: 1px solid var(--line); border-top-left-radius: 3px; border-top-right-radius: 3px; }
+  .bar-labels { display: flex; gap: 18px; padding: 6px 8px 0; }
+  .bar-labels span { width: 34px; text-align: center; font-size: 9px; color: var(--muted); }
+
+  .list-box { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px dashed var(--line); }
+  .list-row:last-child { border-bottom: none; }
+  .list-row .li-title { height: 8px; background: var(--fill2); width: 40%; border-radius: 3px; }
+  .list-row .li-sub { height: 7px; background: var(--fill); width: 22%; border-radius: 3px; }
+
+  /* Anotaciones */
+  .ann { position: relative; }
+  .note { position: absolute; display: flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--ink); border-radius: 12px; padding: 3px 10px 3px 4px; font-size: 10px; font-weight: 600; box-shadow: 2px 2px 0 rgba(0,0,0,.06); z-index: 5; white-space: nowrap; }
+  .note .n { width: 16px; height: 16px; background: var(--ink); color: #fff; border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .legend { margin-top: 14px; font-size: 11px; color: var(--muted); display: grid; grid-template-columns: 1fr 1fr; gap: 4px 32px; }
+  .legend b { color: var(--ink); }
+
+  table.routes { width: 100%; border-collapse: collapse; margin: 14px 0 8px; font-size: 12px; }
+  table.routes th, table.routes td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
+  table.routes th { background: var(--fill); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
+  table.routes code { background: var(--fill); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+
+  @media print { body { padding: 0; } .page { max-width: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Módulo de Seguimiento del Progreso Académico — Wireframe</h1>
+  <p class="subtitle">E-Lean Studio / Aulamate · Frontend Next.js · Fidelidad baja · 4 pantallas</p>
+
+  <table class="routes">
+    <tr><th>Ruta</th><th>Rol</th><th>Pantalla</th></tr>
+    <tr><td><code>/my-courses</code></td><td>Estudiante</td><td>WF-1 · Panel de progreso personal</td></tr>
+    <tr><td><code>/learn/[id]</code></td><td>Estudiante</td><td>WF-2 · Avance dentro de una lección</td></tr>
+    <tr><td><code><code>/paths</code> · <code>/paths/[pathId]</code></code></td><td>Estudiante</td><td>WF-3 · Progreso por unidad temática</td></tr>
+    <tr><td><code>/admin</code></td><td>Docente / Admin</td><td>WF-4 · Monitoreo del progreso del grupo</td></tr>
+  </table>
+
+  <!-- ============ WF-1 ============ -->
+  <h2 class="screen-title"><span class="chip">WF-1</span> Panel de progreso del estudiante</h2>
+  <p class="screen-meta">Ruta <code>/my-courses</code> · Autenticado (rol estudiante) · Fuente: <code>GET /dashboard/student</code></p>
+  <div class="frame">
+    <div class="chrome">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="urlbar">aulamate.com/my-courses</div>
+    </div>
+    <div class="content">
+      <div class="navrow">
+        <div class="logo-box"></div>
+        <div class="navlinks"><span>Lecciones</span><span>Unidades</span><span>Novedades</span><span>Mis Lecciones</span></div>
+        <div class="avatar-circle"></div>
+      </div>
+
+      <div class="titlebar ann">
+        <div class="icon-sq"></div>
+        <div>
+          <h3>Mis Lecciones</h3>
+          <p>Tu avance en las lecciones del grado escolar</p>
+        </div>
+        <div class="note" style="top:-6px; right:0;"><span class="n">1</span> Título de sección</div>
+      </div>
+
+      <div class="grid3 ann" style="position:relative;">
+        <div class="note" style="top:-10px; right:-8px;"><span class="n">2</span> Tarjetas de lecciones en curso</div>
+        <div class="card">
+          <div class="cover"><div class="img-ph"></div></div>
+          <div class="body">
+            <div class="badge-row"><span class="badge">Unidad 1</span><span class="badge">3ro Sec.</span></div>
+            <div class="line w80"></div><div class="line w60"></div>
+            <div class="progress-track"><div class="progress-fill" style="width:65%"></div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="pct-label">65% completado</span>
+              <span class="btn dark">Continuar</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cover"><div class="img-ph"></div></div>
+          <div class="body">
+            <div class="badge-row"><span class="badge">Unidad 2</span><span class="badge">3ro Sec.</span></div>
+            <div class="line w60"></div><div class="line w40"></div>
+            <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="pct-label">100% completado</span>
+              <span class="btn">Repasar</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cover"><div class="img-ph"></div></div>
+          <div class="body">
+            <div class="badge-row"><span class="badge">Unidad 2</span><span class="badge">3ro Sec.</span></div>
+            <div class="line w80"></div><div class="line w60"></div>
+            <div class="progress-track"><div class="progress-fill" style="width:20%"></div></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="pct-label">20% completado</span>
+              <span class="btn dark">Continuar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-head ann" style="position:relative;">
+        <div class="icon-sq"></div>
+        <h4>Tu progreso</h4>
+        <div class="note" style="top:-8px; right:0;"><span class="n">3</span> Métricas del estudiante (4 tarjetas)</div>
+      </div>
+      <div class="grid4">
+        <div class="stat-card">
+          <div class="label">Lecciones completadas <span class="avatar-circle" style="width:12px;height:12px;"></span></div>
+          <div class="value">12</div>
+          <div class="hint">de 30 disponibles para tu grado.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">En progreso</div>
+          <div class="value">4</div>
+          <div class="hint">Lecciones que empezaste a estudiar.</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Promedio</div>
+          <div class="value">16.8</div>
+          <div class="hint">Tu nota vigesimal (0–20).</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Racha</div>
+          <div class="value">5 días</div>
+          <div class="hint">Días consecutivos de estudio.</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><b>1</b> Encabezado de la sección con icono.</div>
+        <div><b>2</b> Tarjeta: portada, unidad/grado, barra de progreso con % y acción "Continuar".</div>
+        <div><b>3</b> Métricas calculadas por el backend: completadas, en progreso, promedio y racha.</div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WF-2 ============ -->
+  <h2 class="screen-title"><span class="chip">WF-2</span> Avance dentro de una lección</h2>
+  <p class="screen-meta">Ruta <code>/learn/[id]</code> · Autenticado · Fuente: <code>GET /lessons/{id}</code> + <code>GET /lessons/{id}/progress</code></p>
+  <div class="frame">
+    <div class="chrome">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="urlbar">aulamate.com/learn/101</div>
+    </div>
+    <div class="content">
+      <div class="navrow">
+        <div class="logo-box"></div>
+        <div class="navlinks"><span>Lecciones</span><span>Unidades</span><span>Mis Lecciones</span></div>
+        <div class="avatar-circle"></div>
+      </div>
+
+      <div class="alert-box ann" style="position:relative;">
+        <div class="note" style="top:-10px; right:6px;"><span class="n">1</span> Alerta de lección completada</div>
+        <div class="icon-sq"></div>
+        <div>
+          <div class="a-title">¡Lección Completada!</div>
+          <div class="a-text">Continúa con la siguiente lección de la unidad para seguir avanzando.</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="sidebar ann" style="position:relative;">
+          <div class="note" style="top:-12px; left:60px;"><span class="n">2</span> Recursos con check de avance</div>
+          <h5>Contenido de la lección</h5>
+          <div class="res-item done"><div class="checkbox checked"></div><div class="r-line"></div></div>
+          <div class="res-item done"><div class="checkbox checked"></div><div class="r-line"></div></div>
+          <div class="res-item"><div class="checkbox"></div><div class="r-line"></div></div>
+          <div class="res-item"><div class="checkbox"></div><div class="r-line"></div></div>
+          <div class="res-item"><div class="checkbox"></div><div class="r-line"></div></div>
+        </div>
+        <div>
+          <div class="lesson-panel">
+            <div class="badge-row"><span class="badge">Unidad 1 · Fracciones</span><span class="badge">3ro Sec.</span></div>
+            <div class="line w80"></div>
+            <div class="line"></div>
+            <div class="line w60"></div>
+            <div class="line w80"></div>
+            <div class="line w40"></div>
+            <div class="toggle-row ann" style="position:relative;">
+              <div class="note" style="top:-14px; right:8px;"><span class="n">3</span> Marcar lección como completada</div>
+              <div>
+                <div class="a-title" style="font-size:12px;">Marcar como completada</div>
+                <div class="a-text">Registra tu avance en el backend.</div>
+              </div>
+              <div class="toggle-pill on"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:10px;">
+            <span class="btn">← Anterior</span>
+            <span class="btn dark">Continuar con la evaluación →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><b>1</b> Alerta success: aparece al alcanzar 100% de avance.</div>
+        <div><b>2</b> Lista de recursos: casilla marcada = recurso completado (guardado por recurso).</div>
+        <div><b>3</b> Toggle de finalización: envía <code>POST /lessons/{id}/progress</code>.</div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WF-3 ============ -->
+  <h2 class="screen-title"><span class="chip">WF-3</span> Progreso por unidad temática</h2>
+  <p class="screen-meta">Rutas <code>/paths</code> (listado de unidades) y <code>/paths/[pathId]</code> (detalle de unidad) · Autenticado</p>
+  <div class="frame">
+    <div class="chrome">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="urlbar">aulamate.com/paths/unidad-fracciones</div>
+    </div>
+    <div class="content">
+      <div class="navrow">
+        <div class="logo-box"></div>
+        <div class="navlinks"><span>Lecciones</span><span>Unidades</span><span>Mis Lecciones</span></div>
+        <div class="avatar-circle"></div>
+      </div>
+
+      <div class="titlebar ann" style="position:relative;">
+        <div class="note" style="top:-8px; right:0;"><span class="n">1</span> Unidad con avance global</div>
+        <div class="icon-sq"></div>
+        <div>
+          <h3>Unidad 1 · Fracciones</h3>
+          <p>5 lecciones · 3 completadas</p>
+        </div>
+      </div>
+
+      <div class="progress-track" style="max-width:420px;"><div class="progress-fill" style="width:60%"></div></div>
+      <p class="pct-label" style="margin-bottom:16px;">60% de la unidad completado</p>
+
+      <div class="list-box ann" style="position:relative;">
+        <div class="note" style="top:-12px; right:8px;"><span class="n">2</span> Estado por lección dentro de la unidad</div>
+        <div class="list-row">
+          <div class="li-title"></div>
+          <div class="res-item done" style="border:none; padding:0;"><div class="checkbox checked"></div><span class="pct-label">Completada</span></div>
+        </div>
+        <div class="list-row">
+          <div class="li-title" style="width:52%;"></div>
+          <div class="res-item done" style="border:none; padding:0;"><div class="checkbox checked"></div><span class="pct-label">Completada</span></div>
+        </div>
+        <div class="list-row">
+          <div class="li-title" style="width:44%;"></div>
+          <div class="res-item done" style="border:none; padding:0;"><div class="checkbox checked"></div><span class="pct-label">Completada</span></div>
+        </div>
+        <div class="list-row">
+          <div class="li-title" style="width:58%;"></div>
+          <div class="progress-track" style="width:110px; margin:0;"><div class="progress-fill" style="width:45%"></div></div>
+          <span class="pct-label">45%</span>
+        </div>
+        <div class="list-row">
+          <div class="li-title" style="width:38%;"></div>
+          <span class="btn dark" style="font-size:10px; padding:4px 10px;">Empezar</span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><b>1</b> Barra de avance global de la unidad (lecciones completadas / total).</div>
+        <div><b>2</b> Cada lección muestra estado: completada, en progreso con %, o "Empezar".</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WF-4 ============ -->
+  <h2 class="screen-title"><span class="chip">WF-4</span> Monitoreo docente del progreso del grupo</h2>
+  <p class="screen-meta">Ruta <code>/admin</code> (dashboard) · Roles docente / admin · Fuentes: <code>GET /dashboard/teacher</code> · <code>GET /dashboard/admin</code></p>
+  <div class="frame">
+    <div class="chrome">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="urlbar">aulamate.com/admin</div>
+    </div>
+    <div class="content">
+      <div class="navrow" style="background:var(--ink); border-color:var(--ink);">
+        <div class="logo-box" style="background:#cfd6dd;"></div>
+        <div class="navlinks"><span style="color:#cfd6dd;">Dashboard</span><span style="color:#cfd6dd;">Lecciones</span><span style="color:#cfd6dd;">Foro</span><span style="color:#cfd6dd;">Usuarios</span></div>
+        <div class="avatar-circle"></div>
+      </div>
+
+      <div class="titlebar">
+        <div>
+          <h3>Dashboard</h3>
+          <p>Seguimiento del progreso académico del grupo</p>
+        </div>
+      </div>
+
+      <div class="grid4 ann" style="position:relative;">
+        <div class="note" style="top:-10px; right:0;"><span class="n">1</span> Indicadores generales</div>
+        <div class="stat-card"><div class="label">Estudiantes activos</div><div class="value">128</div><div class="hint">Últimos 30 días.</div></div>
+        <div class="stat-card"><div class="label">Lecciones completadas</div><div class="value">1,204</div><div class="hint">Acumulado del grupo.</div></div>
+        <div class="stat-card"><div class="label">Promedio general</div><div class="value">15.2</div><div class="hint">Nota vigesimal (0–20).</div></div>
+        <div class="stat-card"><div class="label">Evaluaciones</div><div class="value">56</div><div class="hint">En el periodo actual.</div></div>
+      </div>
+
+      <div class="grid3" style="grid-template-columns: 2fr 1fr; margin-top:16px;">
+        <div class="chart-box ann" style="position:relative;">
+          <div class="note" style="top:-12px; left:40%;"><span class="n">2</span> Gráfico: lecciones por unidad</div>
+          <div class="chart-title">Lecciones por unidad temática</div>
+          <div class="bars">
+            <div class="bar" style="height:45%"></div>
+            <div class="bar" style="height:70%"></div>
+            <div class="bar" style="height:88%"></div>
+            <div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:38%"></div>
+            <div class="bar" style="height:52%"></div>
+          </div>
+          <div class="bar-labels">
+            <span>U1</span><span>U2</span><span>U3</span><span>U4</span><span>U5</span><span>U6</span>
+          </div>
+        </div>
+        <div class="list-box ann" style="position:relative;">
+          <div class="note" style="top:-12px; right:0;"><span class="n">3</span> Actividad reciente</div>
+          <div class="list-row"><div class="li-title" style="width:70%;"></div><span class="pct-label">hace 2 h</span></div>
+          <div class="list-row"><div class="li-title" style="width:55%;"></div><span class="pct-label">hace 5 h</span></div>
+          <div class="list-row"><div class="li-title" style="width:65%;"></div><span class="pct-label">ayer</span></div>
+          <div class="list-row"><div class="li-title" style="width:48%;"></div><span class="pct-label">ayer</span></div>
+          <div class="list-row"><div class="li-title" style="width:62%;"></div><span class="pct-label">2 días</span></div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div><b>1</b> Tarjetas de indicadores según rol (docente: su grupo; admin: toda la institución).</div>
+        <div><b>2</b> Gráfico de barras (Recharts) con la distribución de lecciones por unidad.</div>
+        <div><b>3</b> Últimas acciones: lecciones/evaluaciones recientes con acceso directo.</div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

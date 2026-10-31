@@ -1,154 +1,93 @@
-# Aulamate Frontend
+# E-Lean Studio (Aulamate)
 
-Aplicación web de Aulamate para el aprendizaje de matemáticas. Ofrece experiencias diferenciadas para estudiantes, docentes, familias, coordinación y administración, conectándose con la API Laravel del proyecto.
+Frontend de la plataforma de aprendizaje de matemáticas (marca **Aulamate**), construido con Next.js App Router, React y TypeScript. La aplicación consume la API Laravel de `backend-app-mat` para autenticación y funciones académicas.
 
-- Frontend publicado: <https://aulamate.vercel.app/>
-- API de producción: <https://aulamate.edu/api/v1>
+## Tecnologías
 
-## Stack
+- Next.js 15 y React 18
+- TypeScript
+- Tailwind CSS y componentes Radix UI
+- API REST Laravel con autenticación Bearer de Sanctum
 
-- React 18 y React Router 6.
-- Vite 7 para desarrollo y compilación.
-- Tailwind CSS, CSS propio y temas configurables.
-- Axios para comunicación con la API.
-- React Hook Form y Yup para formularios y validación.
-- Recharts para visualización de datos.
-- Framer Motion para transiciones.
-- React Quill para edición de contenidos.
-- PWA mediante `vite-plugin-pwa`.
-- Vitest y Testing Library para pruebas de componentes.
-- Playwright para pruebas end-to-end.
+## Funcionalidades conectadas con la API
 
-## Funcionalidades
+La integración está implementada en acciones de servidor (`src/lib/actions/*`) y en el cliente HTTP `src/lib/api/client.ts`. La URL base se configura con `API_BASE_URL`; el token de acceso se almacena en una cookie `httpOnly` y las solicitudes al backend se realizan desde el servidor de Next.js.
 
-- Landing, registro, inicio de sesión, Google OAuth y recuperación de contraseña.
-- Términos, privacidad y política de datos.
-- Dashboards adaptados al rol y diseño responsive para escritorio y móvil.
-- Lecciones, recursos, cursos, simulaciones y juegos de matemáticas.
-- Evaluaciones, resultados, exámenes, cronómetro y alertas de comportamiento no permitido.
-- Paneles de trabajo para entregas de estudiantes y revisión docente.
-- Progreso individual, competencias, niveles, insignias, rankings y gamificación.
-- Reportes académicos y estadísticas para docentes.
-- Gestión de salones y calendario académico.
-- Seguimiento de hijos y reportes para familias.
-- Administración de usuarios, configuración, colores, traducciones y trabajos.
-- Mensajería, foros, ayuda, perfil, preferencias y notificaciones.
-- Chat educativo conectado al proxy seguro de IA del backend.
-- Notificaciones push y funcionamiento como aplicación instalable cuando el entorno PWA está habilitado.
+- Registro, inicio/cierre de sesión, recuperación y cambio de contraseña.
+- Inicio de sesión con Google (requiere configurar OAuth en el backend).
+- Perfil de usuario y funciones de administración de cuentas, incluida la creación de cuentas de estudiantes y docentes.
+- Catálogo, detalle, creación y administración de lecciones y sus recursos.
+- Progreso e historial de lecciones y evaluaciones, con paneles/estadísticas por rol.
+- Evaluaciones interactivas: administración de preguntas, envío de respuestas, calificación automática y revisión con respuestas correctas y explicaciones.
+- Retos de aprendizaje, insignias, niveles y puntos de experiencia.
+- Reportes académicos para docentes y administración, con descarga CSV.
+- Seguimiento docente del progreso y resultados de estudiantes.
+- Foro de preguntas y respuestas.
+- Anuncios y notificaciones.
 
-## Roles y rutas principales
+Las llamadas correspondientes están implementadas, pero su funcionamiento requiere que el backend esté configurado y disponible.
 
-- Público: `/`, `/login`, `/register`, `/forgot-password`, `/terms`, `/privacy`, `/data-policy`.
-- Estudiante: `/dashboard`, `/lessons`, `/evaluations`, `/exams`, `/my-work`, `/ranking`, `/gamification`, `/simulations`, `/games`.
-- Docente: `/teacher/dashboard`, `/teacher/lessons/create`, `/teacher/evaluations/create`, `/teacher/exams`, `/reports`, `/teacher/calendar`, `/teacher/salones`.
-- Coordinación: `/coordinator/salones`.
-- Administración: `/admin/dashboard`, `/admin/users`, `/admin/config`, `/admin/colors`, `/admin/works`, `/admin/translations`.
-- Familia: `/parent/lookup`, `/parent`, `/parent/children/:studentId` y reportes asociados.
-- Compartido: `/profile`, `/notifications`, `/settings`, `/help`, `/messages`, `/forum`, `/my-courses`.
+## Funcionalidades locales o pendientes de integración
 
-El acceso se controla mediante rutas protegidas y permisos por rol. La aplicación redirige las rutas desconocidas al dashboard.
+- Las sugerencias de recursos se calculan con una regla local sobre las lecciones y el progreso; no llaman a un servicio de IA.
+- Las unidades/rutas de aprendizaje se forman agrupando lecciones por unidad temática; no usan un recurso independiente de rutas.
+- El contenido informativo y promocional (por ejemplo, términos y privacidad) forma parte del frontend.
+- No se encontró una integración de API para pagos/compra, sesiones en vivo o emisión/validación de certificados. La disponibilidad de componentes visuales no implica que esos flujos estén operativos.
 
 ## Requisitos
 
-- Node.js 18+ recomendado.
+- Node.js 18 o superior.
 - npm.
-- Backend disponible localmente en `http://localhost:8000` o en producción en `https://aulamate.edu`.
-- Navegador moderno con soporte para APIs web usadas por la aplicación.
+- `backend-app-mat` instalado y configurado para probar la integración completa.
 
-## Instalación
+## Instalación y configuración local
 
-```bash
-npm install
-copy .env.example .env
-```
-
-En PowerShell:
+Desde la carpeta de este proyecto:
 
 ```powershell
-Copy-Item .env.example .env
+npm ci
+Copy-Item .env.example .env.local
 ```
 
-Configura en `.env` la URL pública del backend:
+Revisa `.env.local` y configura estas variables:
 
-```env
-VITE_API_URL=https://aulamate.edu/api/v1
-VITE_GOOGLE_CLIENT_ID=tu-client-id-publico.apps.googleusercontent.com
-VITE_SENTRY_DSN=
+```dotenv
+API_BASE_URL=http://127.0.0.1:8000/api/v1
+NEXT_PUBLIC_SITE_URL=http://localhost:9002
 ```
 
-`VITE_GOOGLE_CLIENT_ID` es un identificador público de OAuth, pero debe corresponder al entorno correcto. Las claves secretas de proveedores o de IA nunca deben usar el prefijo `VITE_`, porque Vite las incorpora al bundle del navegador. Configúralas únicamente en el backend.
+`API_BASE_URL` es la URL base del backend, incluyendo `/api/v1`. Para producción, configura la URL pública HTTPS del backend. `NEXT_PUBLIC_SITE_URL` es la URL pública del frontend. No pongas tokens ni credenciales privadas en variables `NEXT_PUBLIC_*`.
 
-## Desarrollo
+Para habilitar Google, configura `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `GOOGLE_REDIRECT_URI` en el `.env` del backend. El URI de retorno local de Google es `http://localhost:8000/api/v1/auth/google/callback`; `FRONTEND_URL` debe apuntar al origen del frontend (`http://localhost:9002` en desarrollo). Registra el URI de retorno en las credenciales OAuth de Google. En producción, usa las URL HTTPS reales del backend y frontend.
 
-```bash
+En otra terminal, inicia el backend siguiendo las instrucciones de su README. Con la configuración local predeterminada, Laravel sirve la API en `http://127.0.0.1:8000`; luego inicia el frontend:
+
+```powershell
 npm run dev
 ```
 
-La aplicación estará disponible en la URL que muestre Vite, normalmente `http://localhost:5173`.
+Abre [http://localhost:9002](http://localhost:9002).
 
-## Compilación y previsualización
+Si la API está en otro host, ajusta `API_BASE_URL`. El backend debe tener su base de datos configurada y migrada. Los endpoints protegidos requieren una cuenta válida y activa con el rol adecuado.
 
-```bash
-npm run build
-npm run preview
-```
+## Cuentas de demostración
 
-El directorio de salida de producción es generado por Vite y no debe contener secretos ni valores privados.
-
-## Pruebas
-
-Pruebas unitarias y de componentes:
-
-```bash
-npm test
-npm run test:watch
-```
-
-Comprobación de tipos:
-
-```bash
-npm run typecheck
-```
-
-Pruebas end-to-end:
-
-```bash
-npm run test:e2e
-```
-
-Playwright inicia Vite automáticamente según `playwright.config.js`. Para pruebas locales alternativas se puede usar la configuración `playwright.local.config.js` cuando el entorno lo requiera.
+Para probar la integración local, usa cuentas de desarrollo creadas por los seeders del backend. No reutilices contraseñas de demostración en producción.
 
 ## Variables de entorno
 
-El archivo `.env.example` documenta las variables del frontend:
+Consulta `.env.example` para los valores de desarrollo. En Vercel configura `API_BASE_URL` como variable de entorno del servidor con la URL HTTPS pública del backend, y `NEXT_PUBLIC_SITE_URL` con el dominio del frontend. Después de cambiar variables en Vercel, vuelve a desplegar para que se apliquen.
 
-- `VITE_API_URL`: URL base de la API versionada (producción: `https://aulamate.edu/api/v1`).
-- `VITE_GOOGLE_CLIENT_ID`: identificador público del cliente Google OAuth.
-- `VITE_SENTRY_DSN`: DSN opcional para monitoreo de errores.
+El cliente envía las solicitudes desde el servidor de Next.js, por lo que el navegador no llama directamente a la API. Si posteriormente se habilitan solicitudes directas desde el navegador, configura también el origen del frontend en CORS del backend.
 
-No guardes tokens de sesión, contraseñas, claves privadas, API keys, DSN privados ni datos reales de usuarios en el repositorio. Todo lo que tenga prefijo `VITE_` puede quedar expuesto al cliente final.
+## Comandos
 
-## Estructura
+- `npm run dev`: servidor de desarrollo en el puerto 9002.
+- `npm run build`: compilación de producción.
+- `npm run start`: inicia la aplicación compilada.
+- `npm run typecheck`: comprueba los tipos TypeScript.
+- `npm run lint`: ejecuta el script de lint configurado en `package.json`.
 
-```text
-src/
-  api/          Clientes Axios agrupados por dominio
-  components/   Vistas y componentes por rol y funcionalidad
-  contexts/     Autenticación, idioma, tema y notificaciones
-  config/       Lectura centralizada de variables de entorno
-  hooks/        Hooks reutilizables
-  styles/       Estilos específicos
-  test/         Configuración y utilidades de pruebas
-  utils/        Utilidades compartidas
-public/         Activos públicos y service worker
-scripts/        Herramientas de desarrollo
- e2e/           Flujos end-to-end con Playwright
-```
+## Despliegue
 
-## Seguridad
-
-- El frontend no debe contener secretos: el bundle es público por definición.
-- Las llamadas autenticadas deben usar la configuración central de Axios y la sesión proporcionada por el backend.
-- No subas `.env`, archivos de resultados con datos personales, capturas con información de usuarios ni tokens.
-- Configura CORS, OAuth, cookies y expiración de sesiones en el backend.
-- Usa datos de prueba en desarrollo y revisa las variables antes de compilar para producción.
+El proyecto utiliza Next.js y puede desplegarse en Vercel. Configura las variables de producción indicadas arriba y confirma que el backend esté publicado, accesible por HTTPS y permita las solicitudes del servidor de Next.js. No uses `127.0.0.1` o `localhost` como URL del backend en producción: allí apuntarían al propio entorno del frontend, no al servidor Laravel.
