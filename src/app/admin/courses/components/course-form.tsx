@@ -48,7 +48,7 @@ const formSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-type CourseFormValues = z.infer<typeof formSchema>;
+type CourseFormValues = z.input<typeof formSchema>;
 
 interface CourseFormProps {
   initialData: Course | null;
@@ -102,13 +102,14 @@ export const CourseForm: React.FC<CourseFormProps> = ({
       };
 
   const form = useForm<CourseFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema, undefined, { raw: true }),
     defaultValues,
   });
 
-  const onSubmit = async (data: CourseFormValues) => {
+  const onSubmit = async (values: CourseFormValues) => {
     try {
       setLoading(true);
+      const data = formSchema.parse(values);
       const payload = {
         title: data.title,
         description: data.description,
@@ -395,7 +396,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({
                       disabled={loading}
                       placeholder="30"
                       {...field}
-                      value={field.value ?? ''}
+                      value={field.value == null ? '' : String(field.value)}
                     />
                   </FormControl>
                   <FormMessage />
