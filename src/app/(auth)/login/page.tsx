@@ -93,7 +93,7 @@ function AuthPageComponent() {
     <div className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute -top-28 -right-24 h-80 w-80 rounded-full bg-primary/20 blur-3xl dark:bg-primary/30" />
       <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-accent/20 blur-3xl dark:bg-accent/20" />
-
+      
       <div className="w-full max-w-md">
         <Card className="bg-card/80 dark:bg-card/60 backdrop-blur-xl shadow-lg overflow-hidden">
            <div className="grid grid-cols-2 text-center text-muted-foreground text-sm font-medium bg-muted/50 backdrop-blur">

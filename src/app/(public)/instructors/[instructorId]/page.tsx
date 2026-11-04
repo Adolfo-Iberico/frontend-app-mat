@@ -43,7 +43,7 @@ export default async function InstructorDetailPage(props: {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 items-center">
             <div className="md:col-span-1 flex justify-center">
               <div className="relative w-48 h-48 sm:w-60 sm:h-60 rounded-2xl overflow-hidden shadow-lg border-4 border-background">
-                <ImagePlaceholder
+                <ImagePlaceholder 
                     alt={instructorName}
                     fill
                     className="object-cover"

@@ -51,7 +51,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       })
       return
     }
-
+    
     toast({
         title: 'Éxito',
         description: 'Has iniciado sesión correctamente.',
@@ -109,16 +109,16 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                 </div>
                 <FormControl>
                   <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      {...field}
+                    <Input 
+                      type={showPassword ? 'text' : 'password'} 
+                      placeholder="••••••••" 
+                      {...field} 
                       className="pr-10"
                     />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
                       className="absolute inset-y-0 right-0 h-full px-3 text-muted-foreground hover:bg-transparent"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}

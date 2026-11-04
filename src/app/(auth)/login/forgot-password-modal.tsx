@@ -12,11 +12,11 @@ interface ForgotPasswordModalProps {
 }
 
 export function ForgotPasswordModal({ open, onOpenChange }: ForgotPasswordModalProps) {
-
+    
     const handleSuccess = () => {
         onOpenChange(false);
     };
-
+    
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md p-0">

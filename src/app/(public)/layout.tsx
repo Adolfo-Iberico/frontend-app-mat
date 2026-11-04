@@ -1,5 +1,5 @@
-import { Footer } from '@/components/Layout/footer';
-import { Header } from '@/components/Layout/header';
+import { Footer } from '@/components/layout/footer';
+import { Header } from '@/components/layout/header';
 import { cn } from '@/lib/utils';
 
 export default function PublicLayout({

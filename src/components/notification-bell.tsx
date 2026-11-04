@@ -38,7 +38,7 @@ export function NotificationBell({ user }: NotificationBellProps) {
             });
         }
     }, [user?.id]);
-
+    
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open);
         if (open) {

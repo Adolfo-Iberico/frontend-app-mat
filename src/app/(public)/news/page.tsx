@@ -7,7 +7,7 @@ import type { NewsArticle } from "@/lib/types";
 
 export default async function NewsPage() {
   const articles = (await getNewsArticles()) as NewsArticle[];
-
+  
   return (
     <div className="container mx-auto max-w-5xl py-12 sm:py-16 md:py-20">
       <div className="flex flex-col items-center text-center mb-12">

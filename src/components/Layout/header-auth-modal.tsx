@@ -22,7 +22,7 @@ export function HeaderAuthModal({ open, onOpenChange }: HeaderAuthModalProps) {
         if (role === 'admin' || role === 'docente') router.push('/admin');
         router.refresh(); // Refresh the page to update auth-dependent UI
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md p-0">

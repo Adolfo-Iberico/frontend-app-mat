@@ -40,7 +40,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
       })
       return
     }
-
+    
     toast({
         title: '📧 Correo Enviado',
         description: 'Revisa tu bandeja de entrada. E-Lean Studio te ha enviado un enlace para restablecer tu contraseña.',

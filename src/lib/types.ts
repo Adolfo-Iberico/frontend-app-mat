@@ -344,7 +344,7 @@ export interface CertificateWithDetails {
     certificate_image_url?: string | null;
   };
 }
-
+    
 
 /** Usuario autenticado (sesiÃ³n de prueba). */
 export interface AuthUser {
@@ -430,3 +430,4 @@ export interface PlatformStats {
   recentItems: { id: string; title: string; subtitle?: string | null; href: string }[];
   recentTitle: string;
 }
+

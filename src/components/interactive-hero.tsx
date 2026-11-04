@@ -218,7 +218,7 @@ function SimpleMobileHero() {
 export function InteractiveHero() {
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
-
+  
   useEffect(() => {
     setIsClient(true);
   }, []);

@@ -42,7 +42,7 @@ export default function TermsPage() {
           las políticas de privacidad o las prácticas de los sitios web o
           servicios de terceros.
         </p>
-
+        
         <h2>5. Terminación</h2>
         <p>
             Podemos rescindir o suspender su cuenta inmediatamente, sin previo aviso ni responsabilidad, por cualquier motivo, incluido, entre otros, si incumple los Términos.

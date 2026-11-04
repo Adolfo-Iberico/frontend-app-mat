@@ -51,7 +51,7 @@ const noteColors = [
 export function NoteCard({ note, onDelete, isDeleting, index }: NoteCardProps) {
     const timeAgo = formatDistanceToNow(new Date(note.created_at), { addSuffix: true, locale: es });
     const color = noteColors[index % noteColors.length];
-
+    
     return (
         <Card className={cn("flex flex-col shadow-sm hover:shadow-md transition-shadow", color.bg, color.border)}>
             <CardContent className="p-4 flex-grow">
@@ -59,9 +59,9 @@ export function NoteCard({ note, onDelete, isDeleting, index }: NoteCardProps) {
             </CardContent>
             <CardFooter className={cn("p-2 border-t flex justify-between items-center", color.border, "dark:border-opacity-50")}>
                 <p className={cn("text-xs", color.subtleText)}>{timeAgo}</p>
-                <Button
-                    variant="ghost"
-                    size="icon"
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
                     className={cn("h-7 w-7", color.subtleText, color.hover)}
                     onClick={() => onDelete(note.id)}
                     disabled={isDeleting}

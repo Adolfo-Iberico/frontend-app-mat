@@ -20,7 +20,7 @@ export default function HeroVisual() {
         .float-2 { animation: floaty 6s ease-in-out infinite 2s; }
         .float-3 { animation: floaty 6s ease-in-out infinite 4s; }
       `}</style>
-
+      
       {/* Mobile Layout: Stack cards vertically */}
       <div className="flex w-full max-w-xs flex-col items-center gap-4 lg:hidden">
         {tools.map((tool, index) => (

@@ -41,7 +41,7 @@ const formSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-type NewsFormValues = z.input<typeof formSchema>;
+type NewsFormValues = z.infer<typeof formSchema>;
 
 interface NewsFormProps {
   initialData: (NewsArticle & { isActive?: boolean; type?: string }) | null;
@@ -63,7 +63,7 @@ export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
   const action = initialData ? 'Guardar cambios' : 'Crear anuncio';
 
   const form = useForm<NewsFormValues>({
-    resolver: zodResolver(formSchema, undefined, { raw: true }),
+    resolver: zodResolver(formSchema),
     defaultValues: initialData
       ? {
           title: initialData.title,
@@ -81,10 +81,9 @@ export const NewsForm: React.FC<NewsFormProps> = ({ initialData }) => {
         },
   });
 
-  const onSubmit = async (values: NewsFormValues) => {
+  const onSubmit = async (data: NewsFormValues) => {
     try {
       setLoading(true);
-      const data = formSchema.parse(values);
       const payload = {
         title: data.title,
         description: data.description,

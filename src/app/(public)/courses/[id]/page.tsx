@@ -13,7 +13,7 @@ export default async function CourseDetailPage(props: {
   const { id } = params;
 
   const course = await getCourseById(id);
-
+  
   if (!course) {
     notFound();
   }

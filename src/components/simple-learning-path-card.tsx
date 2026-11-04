@@ -13,7 +13,7 @@ export function SimpleLearningPathCard({ path }: SimpleLearningPathCardProps) {
   return (
     <Card className="flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0">
-        <div
+        <div 
           className="w-full h-48 bg-cover bg-center"
           style={{ backgroundImage: `url(${path.image_url || 'https://placehold.co/600x400.png'})` }}
         />

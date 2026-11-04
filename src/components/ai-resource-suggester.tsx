@@ -41,7 +41,7 @@ export function AiResourceSuggester() {
     } else if (result.suggestedResources) {
       setSuggestion(result.suggestedResources);
     }
-
+    
     setIsLoading(false);
   }
 

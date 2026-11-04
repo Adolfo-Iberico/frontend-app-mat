@@ -48,7 +48,7 @@ export const ReviewCard = ({ testimonial }: ReviewCardProps) => {
           </div>
       )}
       <blockquote className="mt-2 text-sm flex-grow">{testimonial.comment}</blockquote>
-
+      
       {testimonial.courseTitle && (
         <div className="mt-3 pt-3 border-t border-dashed border-gray-950/20 dark:border-gray-50/20">
           <p className="text-xs text-muted-foreground flex items-center gap-1.5">

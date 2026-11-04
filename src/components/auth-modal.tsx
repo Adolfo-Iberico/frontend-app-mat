@@ -22,7 +22,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         if (role === 'admin' || role === 'docente') router.push('/admin');
         router.refresh();
     }
-
+    
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md p-0">

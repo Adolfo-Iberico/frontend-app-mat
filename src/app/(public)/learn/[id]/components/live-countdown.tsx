@@ -14,7 +14,7 @@ interface LiveCountdownProps {
 
 export function LiveCountdown({ targetDate, sessionUrl }: LiveCountdownProps) {
   const { toast } = useToast();
-
+  
   const calculateTimeLeft = () => {
     const difference = +new Date(targetDate) - +new Date();
     let timeLeft = {};
@@ -44,7 +44,7 @@ export function LiveCountdown({ targetDate, sessionUrl }: LiveCountdownProps) {
   }, [timeLeft]);
 
   const timerComponents: JSX.Element[] = [];
-
+  
   if (isClient) {
       Object.keys(timeLeft).forEach((interval) => {
         const value = timeLeft[interval as keyof typeof timeLeft];
@@ -77,7 +77,7 @@ export function LiveCountdown({ targetDate, sessionUrl }: LiveCountdownProps) {
   const sessionTime = new Date(targetDate);
   const now = new Date();
   // The session is considered "live" for 12 hours after the start time.
-  const isSessionLive = now >= sessionTime && now < new Date(sessionTime.getTime() + 12 * 60 * 60 * 1000);
+  const isSessionLive = now >= sessionTime && now < new Date(sessionTime.getTime() + 12 * 60 * 60 * 1000); 
   const isSessionOver = now >= new Date(sessionTime.getTime() + 12 * 60 * 60 * 1000);
 
   return (

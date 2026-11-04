@@ -10,29 +10,29 @@
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
+ 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
+ 
     --primary: 202 80% 43%;
     --primary-foreground: 210 40% 98%;
-
+ 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
+ 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
+ 
     --accent: 195 72% 70%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
+ 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
+ 
     --radius: 1rem;
 
      /* New custom colors */
@@ -40,7 +40,7 @@
     --brand-primary-blue: 202 80% 43%; /* #158BC9 */
     --brand-accent-blue: 195 72% 70%; /* #58C3E3 */
   }
-
+ 
   .dark {
     --background: 222 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -80,12 +80,12 @@
       radial-gradient(at 80% 20%, hsl(var(--brand-primary-blue) / 0.1) 0px, transparent 50%),
       radial-gradient(at 50% 50%, hsl(var(--brand-dark-blue) / 0.05) 0px, transparent 50%);
   }
-
+  
   .dark .public-body-bg {
     background-color: hsl(var(--background));
     background-image: none; /* O puedes definir un degradado diferente para el modo oscuro */
   }
-
+  
   .auth-body-bg-themed {
     background-color: hsl(var(--secondary) / 0.3);
   }

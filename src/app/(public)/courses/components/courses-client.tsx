@@ -34,7 +34,7 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
         : [...prev, category]
     );
   };
-
+  
   const handleLevelChange = (level: string) => {
     setSelectedLevels(prev =>
       prev.includes(level)
@@ -42,7 +42,7 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
         : [...prev, level]
     );
   };
-
+  
   const clearFilters = () => {
     setSelectedCategories([]);
     setSelectedLevels([]);
@@ -73,8 +73,8 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
           <div className="space-y-3">
             {allCategories.map(category => (
               <div key={category} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`cat-${category}`}
+                <Checkbox 
+                  id={`cat-${category}`} 
                   checked={selectedCategories.includes(category)}
                   onCheckedChange={() => handleCategoryChange(category)}
                 />
@@ -88,8 +88,8 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
           <div className="space-y-3">
             {allLevels.map(level => (
               <div key={level} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`lvl-${level}`}
+                <Checkbox 
+                  id={`lvl-${level}`} 
                   checked={selectedLevels.includes(level)}
                   onCheckedChange={() => handleLevelChange(level)}
                 />
@@ -109,7 +109,7 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
       </SheetFooter>
     </div>
   );
-
+  
   if (!allCourses) {
     return <div className="flex items-center justify-center min-h-[50vh]"><Loader2 className="w-8 h-8 animate-spin" /></div>;
   }
@@ -199,3 +199,5 @@ export function CoursesClient({ allCourses, allCategories, allLevels }: CoursesC
       </div>
   );
 }
+
+    

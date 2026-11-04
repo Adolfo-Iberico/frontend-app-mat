@@ -30,19 +30,19 @@ interface UserNavProps {
 export function UserNav({ user, profile, initials, isAdminPanel = false }: UserNavProps) {
     const router = useRouter();
     const { signOut } = useAuth();
-
+    
     const handleSignOut = async () => {
         await signOut();
         router.push('/');
         router.refresh();
     }
-
+  
   const firstName = profile?.first_name;
   const lastName = profile?.last_name;
   const email = user?.email;
   const role = profile?.role;
   const avatarUrl = profile?.avatar_url;
-
+  
 
   if (!user || !profile) {
     return null;

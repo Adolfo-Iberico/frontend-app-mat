@@ -13,7 +13,7 @@ export function useIsMobile() {
     checkDevice()
 
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-
+    
     // Check on resize
     mql.addEventListener("change", checkDevice)
 

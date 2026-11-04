@@ -87,7 +87,7 @@ export function QAndASection({ lessonId, courseId }: QAndASectionProps) {
         toast({ title: 'Error', description: result.error, variant: 'destructive' });
     }
   };
-
+  
   const handlePostAnswer = async (questionId: string) => {
     if (!replyContent.trim() || !user || !profile) return;
     setIsPostingAnswer(questionId);
@@ -108,7 +108,7 @@ export function QAndASection({ lessonId, courseId }: QAndASectionProps) {
         created_at: new Date().toISOString(),
         votes: 0,
     };
-
+    
     setQuestions(prev => prev.map(q => q.id === questionId ? { ...q, answers: [...(q.answers || []), newAnswer] } : q));
     setReplyContent('');
     setActiveReplyId(null);
@@ -118,7 +118,7 @@ export function QAndASection({ lessonId, courseId }: QAndASectionProps) {
       user_id: user.id,
       content: replyContent,
     });
-
+    
     setIsPostingAnswer(null);
     if (result.success) {
         if (result.data) {
@@ -284,7 +284,7 @@ export function QAndASection({ lessonId, courseId }: QAndASectionProps) {
                                 <AvatarFallback>{initials}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 space-y-2">
-                                <Textarea
+                                <Textarea 
                                     placeholder="Escribe tu respuesta..."
                                     value={replyContent}
                                     onChange={(e) => setReplyContent(e.target.value)}
