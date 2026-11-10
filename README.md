@@ -27,16 +27,21 @@ La integración está implementada en acciones de servidor (`src/lib/actions/*`)
 
 Las llamadas correspondientes están implementadas, pero su funcionamiento requiere que el backend esté configurado y disponible.
 
+El HTML de cursos y lecciones se sanea con DOMPurify antes de renderizarse.
+El backend también lo sanea al guardar contenido; la validación del cliente
+no sustituye la del servidor.
+
 ## Funcionalidades locales o pendientes de integración
 
 - Las sugerencias de recursos se calculan con una regla local sobre las lecciones y el progreso; no llaman a un servicio de IA.
 - Las unidades/rutas de aprendizaje se forman agrupando lecciones por unidad temática; no usan un recurso independiente de rutas.
 - El contenido informativo y promocional (por ejemplo, términos y privacidad) forma parte del frontend.
+- El backend ofrece consultas de progreso para apoderados autenticados, pero este frontend no incluye una pantalla conectada a esas rutas.
 - No se encontró una integración de API para pagos/compra, sesiones en vivo o emisión/validación de certificados. La disponibilidad de componentes visuales no implica que esos flujos estén operativos.
 
 ## Requisitos
 
-- Node.js 18 o superior.
+- Node.js 22 (misma versión usada en CI; Next.js requiere Node.js 18.18 o superior).
 - npm.
 - `backend-app-mat` instalado y configurado para probar la integración completa.
 
@@ -70,6 +75,13 @@ Abre [http://localhost:9002](http://localhost:9002).
 
 Si la API está en otro host, ajusta `API_BASE_URL`. El backend debe tener su base de datos configurada y migrada. Los endpoints protegidos requieren una cuenta válida y activa con el rol adecuado.
 
+Para consultar el progreso de un estudiante, inicia sesión con una cuenta
+activa de rol `parent` y asegúrate de que el backend tenga registrada la
+relación en `parent_student`. El backend verifica esa relación en cada
+solicitud a sus endpoints; el DNI no es una credencial. El CAPTCHA es de un
+solo uso y no sustituye la autenticación ni el vínculo del apoderado. Este
+frontend todavía no tiene una pantalla para iniciar ese flujo.
+
 ## Cuentas de demostración
 
 Para probar la integración local, usa cuentas de desarrollo creadas por los seeders del backend. No reutilices contraseñas de demostración en producción.
@@ -87,7 +99,16 @@ El cliente envía las solicitudes desde el servidor de Next.js, por lo que el na
 - `npm run start`: inicia la aplicación compilada.
 - `npm run typecheck`: comprueba los tipos TypeScript.
 - `npm run lint`: ejecuta el script de lint configurado en `package.json`.
+- `npm audit`: revisa vulnerabilidades conocidas en dependencias.
+
+El workflow de GitHub Actions en `.github/workflows/ci.yml` ejecuta `npm ci`,
+`npm run typecheck` y `npm run build` en Linux. El build requiere `API_BASE_URL`
+configurada con HTTPS en producción; CI usa una URL HTTPS de prueba porque no
+realiza solicitudes reales a la API durante la compilación.
 
 ## Despliegue
 
 El proyecto utiliza Next.js y puede desplegarse en Vercel. Configura las variables de producción indicadas arriba y confirma que el backend esté publicado, accesible por HTTPS y permita las solicitudes del servidor de Next.js. No uses `127.0.0.1` o `localhost` como URL del backend en producción: allí apuntarían al propio entorno del frontend, no al servidor Laravel.
+
+La carpeta `src/components/layout` usa minúsculas para que sus imports
+funcionen en sistemas de archivos sensibles a mayúsculas como Linux.

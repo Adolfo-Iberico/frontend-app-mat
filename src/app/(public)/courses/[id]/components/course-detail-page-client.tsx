@@ -19,6 +19,7 @@ import {
   Layers,
 } from 'lucide-react';
 import type { Course, Lesson } from '@/lib/types';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { notFound } from 'next/navigation';
 
 export function CourseDetailPageContent({ course, lessons }: { course: Course; lessons: Lesson[] }) {
@@ -84,7 +85,7 @@ export function CourseDetailPageContent({ course, lessons }: { course: Course; l
                 <CardContent className="p-0">
                   <div
                     className="prose prose-sm sm:prose-base dark:prose-invert max-w-none p-6"
-                    dangerouslySetInnerHTML={{ __html: course.long_description ?? course.description }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.long_description ?? course.description) }}
                   />
                 </CardContent>
               </Card>

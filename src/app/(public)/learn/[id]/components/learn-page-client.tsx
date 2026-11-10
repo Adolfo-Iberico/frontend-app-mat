@@ -27,6 +27,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { QAndASection } from './q-and-a-section';
 import { getLessonProgressForCourse, toggleLessonCompleted } from '@/app/actions';
 import type { Course, Lesson } from '@/lib/types';
+import { sanitizeHtml } from '@/lib/sanitize-html';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -285,7 +286,7 @@ export function LearnPageComponent({
         <div className="w-full h-full overflow-y-auto bg-background">
           <div
             className="prose prose-sm sm:prose-base dark:prose-invert max-w-none p-6 sm:p-10 [&_code]::bg-muted [&_code]:rounded [&_code]:px-1"
-            dangerouslySetInnerHTML={{ __html: course.long_description ?? '' }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(course.long_description ?? '') }}
           />
         </div>
       );

@@ -45,7 +45,8 @@
     "framer-motion": "^12.23.15",
     "gsap": "^3.12.5",
     "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
+    "isomorphic-dompurify": "^3.19.0",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.481.0",
     "next": "15.5.28",
     "next-themes": "^0.3.0",
@@ -58,10 +59,9 @@
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/jspdf": "^2.0.0",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",
