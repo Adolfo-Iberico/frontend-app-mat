@@ -31,6 +31,10 @@ El HTML de cursos y lecciones se sanea con DOMPurify antes de renderizarse.
 El backend también lo sanea al guardar contenido; la validación del cliente
 no sustituye la del servidor.
 
+Las páginas de ajustes requieren el rol `admin`. Las páginas de contenido y
+evaluación de cursos verifican en el servidor una sesión válida con rol
+`docente`; el layout cliente no es el control de autorización.
+
 ## Funcionalidades locales o pendientes de integración
 
 - Las sugerencias de recursos se calculan con una regla local sobre las lecciones y el progreso; no llaman a un servicio de IA.

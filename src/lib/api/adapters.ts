@@ -1,13 +1,13 @@
-﻿/**
+/**
  * Adaptadores: convierten las respuestas de la API de Aulamate en las
  * formas de datos que consumen las pantallas del frontend.
  *
- * Correspondencia de conceptos (frontend â†} backend):
- * - "Curso" de la UI  â†} Lesson del backend (con dificultad, unidad y grado)
- * - "LecciÃ³n" interna â†} recursos del backend (pdf/video/link) + contenido
- * - "Pregunta"        â†} ForumThread Â· "Respuesta" â†} ForumPost
- * - "Novedad"         â†} Announcement
- * - Roles: adminâ†}admin Â· teacher/coordinador/directorâ†}docente Â· studentâ†}user
+ * Correspondencia de conceptos (frontend -> backend):
+ * - "Curso" de la UI -> Lesson del backend (con dificultad, unidad y grado)
+ * - "Lección" interna -> recursos del backend (pdf/video/link) + contenido
+ * - "Pregunta" -> ForumThread; "Respuesta" -> ForumPost
+ * - "Novedad" -> Announcement
+ * - Roles: admin -> admin; teacher/coordinador/director -> docente; student -> user
  */
 import type {
   Answer,
@@ -184,7 +184,7 @@ export function mapEvaluationSummary(evaluation: BackendEvaluation): EvaluationS
 }
 
 /**
- * Convierte una lecciÃ³n del backend en el "Course" que consume la UI.
+ * Convierte una lección del backend en el "Course" que consume la UI.
  */
 export function mapLessonToCourse(lesson: BackendLesson): Course {
   const teacherId = lesson.teacher?.id ?? lesson.teacher_id ?? '';
@@ -205,7 +205,7 @@ export function mapLessonToCourse(lesson: BackendLesson): Course {
     category_id: lesson.unit ?? '',
     image_url: lesson.image_url ?? null,
     level: difficultyToLevel(lesson.difficulty),
-    language: 'EspaÃ±ol',
+    language: 'Español',
     created_at: lesson.created_at ?? new Date().toISOString(),
     updated_at: lesson.updated_at ?? lesson.created_at ?? new Date().toISOString(),
     lessons: [],
@@ -238,7 +238,7 @@ export function mapLessonToCourse(lesson: BackendLesson): Course {
 
 /**
  * Construye la lista de "lecciones internas" del curso (la UI del reproductor):
- * el primer Ã­tem es el contenido HTML de la lecciÃ³n y el resto son recursos.
+ * el primer ítem es el contenido HTML de la lección y el resto son recursos.
  */
 export function buildLessonItems(courseId: string, course: Course): Lesson[] {
   const items: Lesson[] = [];
@@ -247,7 +247,7 @@ export function buildLessonItems(courseId: string, course: Course): Lesson[] {
     items.push({
       id: `content-${courseId}`,
       course_id: courseId,
-      title: 'Contenido de la lecciÃ³n',
+      title: 'Contenido de la lección',
       description: null,
       duration: course.estimatedTime ? `${course.estimatedTime} min` : null,
       video_url: null,
@@ -336,7 +336,7 @@ export function mapAnnouncementToNews(announcement: BackendAnnouncement): NewsAr
     long_description: announcement.body,
     image_urls: [],
     author_id: announcement.created_by ?? '',
-    author: { name: announcement.author?.full_name ?? 'AdministraciÃ³n', avatarUrl: '' },
+    author: { name: announcement.author?.full_name ?? 'Administración', avatarUrl: '' },
     created_at: announcement.created_at ?? new Date().toISOString(),
     updated_at: announcement.updated_at ?? announcement.created_at ?? new Date().toISOString(),
     is_project: false,

@@ -18,5 +18,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# Configuracion local de IDEs en la nube y asistentes
+.claude/
+.idx/
+
 # Caché de Turbopack
 .turbo
