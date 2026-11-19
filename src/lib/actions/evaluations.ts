@@ -17,14 +17,6 @@ import type {
   QuizQuestion,
 } from '@/lib/types';
 
-/**
- * Evaluaciones reales del backend:
- * - Las preguntas se sirven con GET /evaluations/{id}/questions
- *   (al estudiante se le oculta la respuesta correcta).
- * - El envío se califica EN EL SERVIDOR con POST /evaluations/{id}/submit
- *   (escala 0–20; se exige ≥ 11 para aprobar).
- */
-
 /** Evaluación principal de la lección (la primera publicada). */
 export async function getEvaluationByCourseId(courseId: string): Promise<EvaluationSummary | null> {
   const session = await getSession();

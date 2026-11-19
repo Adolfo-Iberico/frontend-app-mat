@@ -3,15 +3,6 @@
 import { api } from '@/lib/api/client';
 import { getSession } from '@/lib/session';
 
-// ============================================================
-// Módulo de Gamificación — integración con el backend Laravel.
-//
-// Endpoints consumidos:
-// - GET /gamification/summary      (rol estudiante)
-// - GET /rankings/overall          (autenticado)
-// - GET /rankings/my-position      (autenticado)
-// ============================================================
-
 /** Logro del backend (Achievement) con estado de desbloqueo para el usuario. */
 export interface BackendAchievement {
   slug: string;

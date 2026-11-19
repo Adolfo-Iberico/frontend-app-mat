@@ -1,19 +1,5 @@
-
-// ============================================================
-// Módulo de Gamificación: insignias, niveles y puntajes.
-//
-// Fuente de verdad: backend Laravel (ver src/lib/actions/gamification.ts).
-// Este archivo provee tipos UI compartidos, etiquetas de categorías,
-// iconos y un cálculo local de respaldo que se usa únicamente
-// cuando la API no responde (misma estrategia que el resto de la app).
-// ============================================================
-
 import type { StudentLessonItem } from '@/lib/actions/dashboard';
 import type { BackendAchievement } from '@/lib/actions/gamification';
-
-// ------------------------------------------------------------
-// Etiquetas de categorías (claves del backend y locales)
-// ------------------------------------------------------------
 
 export type BadgeIconName =
   | 'footprints'

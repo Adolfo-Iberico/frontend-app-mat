@@ -22,7 +22,7 @@ export async function getAcademicReports(): Promise<AcademicReportData> {
     ]);
     return {
       performance: (performance.data ?? null) as Record<string, unknown> | null,
-      grades,
+      grades, 
       error: null,
     };
   } catch (error) {
